@@ -1,0 +1,29 @@
+.reveal pre code {
+    max-height: initial;
+}
+
+.reveal section img {
+    background: inherit;
+    border: inherit;
+    box-shadow: inherit;
+}
+
+pre.ascii-art {
+    display: table;
+    width: initial;
+}
+pre.ascii-art code {
+    display: table;
+    margin: auto;
+}
+
+section.dark h1 {
+    color: black;
+}
+
+code span.im {color: #dc322f} /* Import */
+code span.va { color: #268bd2; } /* Variable */
+code span.kw { color: #859900; font-weight: initial; } /* Keyword */
+code span.cf { color: #859900; font-weight: initial; } /* ControlFlow */
+code span.co { color: #2aa198; font-style: initial; } /* Comment */
+code span.st { color: #2aa198; } /* String */
