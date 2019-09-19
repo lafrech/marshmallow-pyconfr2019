@@ -49,7 +49,7 @@ json.loads('{"name": "A-Team"}')
 # {'name': 'A-Team'}
 ```
 
-## json (2)
+## json (2)
 
 JSON ne définit que des types basiques.
 
@@ -145,7 +145,7 @@ class Team(orm.Model):
     name = orm.StringField()
     creation_date = orm.DateTiemField()
 
-# Schéma
+# Schéma
 
 import datetime as dt
 import marshmallow as ma
@@ -167,7 +167,7 @@ schema.dump(team)
 # {'name': 'A-Team', 'creation_date': '1983-01-23T00:00:00'}
 ```
 
-## Champs imbriqués
+## Champs imbriqués
 
 ```python
 
@@ -183,16 +183,16 @@ class TeamSchema(ma.Schema):
 team = {
     'name': 'Ghostbusters',
     'members': [
-        {'first_name': "Egon", 'last_name': "Spengler", 'birthdate': dt.datetime(1960, 9, 6)},
-        {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': dt.datetime(1958, 10, 2)},
+        {'first_name': "Egon", 'last_name': "Spengler", 'birthdate': dt.datetime(1958, 10, 2)},
+        {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': dt.datetime(1960, 9, 6)},
     ]
 }
 
 TeamSchema().dumps(team)
 # {'name': 'Ghostbusters',
 #  'members': [
-#   {'first_name': 'Egon', 'birthdate': '1960-09-06T00:00:00', 'last_name': 'Spengler'},
-#   {'first_name': 'Peter', 'birthdate': '1958-10-02T00:00:00', 'last_name': 'Venkman'}
+#   {'first_name': 'Egon', 'last_name': 'Spengler', 'birthdate': '1958-10-02T00:00:00'},
+#   {'first_name': 'Peter', 'last_name': 'Venkman', 'birthdate': '1960-09-06T00:00:00'}
 # ]}
 ```
 
@@ -217,21 +217,155 @@ TeamSchema().dumps(team)
 ## Questions
 
 
-# Écosystème
+# Écosystème
 
-## Intégration ORM/ODM
+## Intégration ORM/ODM
 
-- sqlalchemy
-- peewee
-- mongoengine
+Possibilités d'intégration avec différents ORM/ODM
 
-## µmongo : ODM MongoDB
+Génération automatique de schémas marshmallow depuis le modèle
 
-## webargs : Parse request arguments
+Les types et validateurs sont inférés des classes du modèle
 
-## apispec : Generate OpenAPI documentation
+Permet de générer des schémas d'API en minimisant la duplication de code
 
-## flask-rest-api
+- SQLAlchemy → marshmallow-sqlalchemy
+- peewee → marshmallow-peewee
+- MongoEngine → marshmallow-mongoengine
+
+---------------------------------------------------
+
+### marshmallow-mongoengine : modèle
+
+```python
+import mongoengine as me
+
+class Team(me.Document):
+    name = me.StringField(max_length=40)
+    members = me.ListField(me.ReferenceField('Member'))
+
+class Member(me.Document):
+    first_name = me.StringField()
+    last_name = me.StringField()
+    birthdate = me.DateTimeField()
+```
+
+---------------------------------------------------
+
+### marshmallow-mongoengine : schémas
+
+```python
+from marshmallow_mongoengine import ModelSchema
+
+class TeamSchema(ModelSchema):
+    class Meta:
+        model = Team
+
+class MemberSchema(ModelSchema):
+    class Meta:
+        model = Member
+
+team = Team.objects.get(name='Ghostbusters')
+
+TeamSchema().dump(team)
+# {'id': 1,
+#   'name': 'Ghostbusters',
+#  'members': [
+#   {'first_name': 'Egon', 'last_name': 'Spengler', 'birthdate': '1958-10-02T00:00:00'},
+#   {'first_name': 'Peter', 'last_name': 'Venkman', 'birthdate': '1960-09-06T00:00:00'}
+# ]}
+
+TeamSchema().load({'name': 'This name is too long to pass validation.'})
+# marshmallow.exceptions.ValidationError: {'name': ['Longer than maximum length 40.']}
+```
+
+## umongo : ODM MongoDB
+
+Alternative à MongoEngine + marshmallow-mongoengine
+
+Utilise marshmallow pour serialization/désérialisation MongoDB BSON
+
+Génère schemas marshmallow pour API
+
+Fonctionne avec Pymogo, TxMongo, motor_asyncio
+
+## webargs : désérialisation de requêtes
+
+Désérialise et valide les requêtes HTTP
+
+Prend en charge nativement les principaux serveurs web :
+
+Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, aiohttp
+
+---------------------------------------------------
+
+### Sans webargs
+
+```python
+from flask import Flask, request
+
+app = Flask(__name__)
+
+team = TeamSchema()
+
+@app.route("/")
+def index():
+    # Désérialisation et validation
+    body = request.json
+    try:
+        team_data = team_schema.load(body)
+    except ValidationError as exc:
+        abort(422)
+    # Traitement
+    team = Team(**team_data)
+    team.save()
+    return team_schema.dump(team), 201
+```
+
+---------------------------------------------------
+
+### Avec webargs (1)
+
+```python
+from flask import Flask
+from webargs.flaskparser import use_args
+
+app = Flask(__name__)
+
+@app.route("/")
+@use_args(TeamSchema, location='query')
+def index(team_data):
+    team = Team(**team_data)
+    team.save()
+    return team_schema.dump(team), 201
+```
+
+---------------------------------------------------
+
+### Avec webargs (2)
+
+Inclure les erreurs de validation dans la réponse
+
+```python
+from flask import jsonify
+
+# Return validation errors as JSON
+@app.errorhandler(422)
+def handle_error(err):
+    messages = err.data.get("messages", ["Invalid request."])
+    return jsonify({"errors": messages}), err.code
+```
+
+## apispec : Documentation OpenAPI (Swagger) 
+
+Génération de la documentation OpenAPI
+
+Introspection des schémas marshmallow
+
+Prise en charge de flask, bottle, tornado via apispec-webframeworks
+
+
+## flask-rest-api
 
 - Injection de paramètres avec webargs
 - Doc auto avec apispec, sans YAML
@@ -240,9 +374,9 @@ TeamSchema().dumps(team)
 - Pagination
 
 
-# Utilisateurs
+# Utilisateurs
 
-## Star / watch GitHub
+## Star / watch GitHub
 
 ## Nos projets
 
