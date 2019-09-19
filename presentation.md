@@ -118,37 +118,44 @@ Utilisations typiques :
 import datetime as dt
 import marshmallow as ma
 
-team = {'name': 'A-Team', 'creation_date': dt.datetime(1983, 1, 23)}
-
 class TeamSchema(ma.Schema):
     name = ma.fields.String()
     creation_date = ma.fields.DateTime()
 
 schema = TeamSchema()
 
+team = {'name': 'A-Team', 'creation_date': dt.datetime(1983, 1, 23)}
+
 schema.dump(team)
 # {'name': 'A-Team', 'creation_date': '1983-01-23T00:00:00'}
 
-schema.dump(team)
+schema.dumps(team)
 # '{"name": "A-Team", "creation_date": "1983-01-23T00:00:00"}'
 ```
 
 ## Séparation modèle / vue
 
-Modèle
 
 ```python
+# Modèle
+
 import orm
 
 class Team(orm.Model):
     name = orm.StringField()
     creation_date = orm.DateTiemField()
 
-```
+# Schéma
 
-Vue
+import datetime as dt
+import marshmallow as ma
 
-```python
+class TeamSchema(ma.Schema):
+    name = ma.fields.String()
+    creation_date = ma.fields.DateTime()
+
+# Vue
+
 from .models import Team
 from .schemas import TeamSchema
 
@@ -160,11 +167,38 @@ schema.dump(team)
 # {'name': 'A-Team', 'creation_date': '1983-01-23T00:00:00'}
 ```
 
+## Champs imbriqués
+
+```python
+
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String()
+    last_name = ma.fields.String()
+    birthdate = ma.fields.DateTime()
+
+class TeamSchema(ma.Schema):
+    name = ma.fields.String()
+    members = ma.fields.List(ma.fields.Nested(MemberSchema))
+
+team = {
+    'name': 'Ghostbusters',
+    'members': [
+        {'first_name': "Egon", 'last_name': "Spengler", 'birthdate': dt.datetime(1960, 9, 6)},
+        {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': dt.datetime(1958, 10, 2)},
+    ]
+}
+
+TeamSchema().dumps(team)
+# {'name': 'Ghostbusters',
+#  'members': [
+#   {'first_name': 'Egon', 'birthdate': '1960-09-06T00:00:00', 'last_name': 'Spengler'},
+#   {'first_name': 'Peter', 'birthdate': '1958-10-02T00:00:00', 'last_name': 'Venkman'}
+# ]}
+```
+
 
 
 ## TODO
-
-- nested fields
 
 - dump_only, load_only
 - only, exclude
@@ -175,7 +209,7 @@ schema.dump(team)
 - post/pre load/dump
 - loading to object
 
-- validation: 
+- validation:
     required
     length,range,...
     errors dict structure
