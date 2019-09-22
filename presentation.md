@@ -6,7 +6,7 @@
 - La sérialisation
 - marshmallow
 - L'écosystème marshmallow
-- Construction d'une API REST: flask-rest-api
+- Construction d'une API REST: flask-smorest
 
 # La sérialisation
 
@@ -217,15 +217,17 @@ TeamSchema().dumps(team)
 ## Questions
 
 
-# Écosystème
+# Intégration ORM/ODM
 
-## Intégration ORM/ODM
+## Intégration avec différents ORM/ODM
 
-Possibilités d'intégration avec différents ORM/ODM
+ORM : Object-Relation Mapping
+
+ODM : Object-Document Mapping
 
 Génération automatique de schémas marshmallow depuis le modèle
 
-Les types et validateurs sont inférés des classes du modèle
+Types et validateurs inférés des classes du modèle
 
 Permet de générer des schémas d'API en minimisant la duplication de code
 
@@ -233,9 +235,9 @@ Permet de générer des schémas d'API en minimisant la duplication de code
 - peewee → marshmallow-peewee
 - MongoEngine → marshmallow-mongoengine
 
----------------------------------------------------
+## marshmallow-mongoengine
 
-### marshmallow-mongoengine : modèle
+### Modèle
 
 ```python
 import mongoengine as me
@@ -252,7 +254,7 @@ class Member(me.Document):
 
 ---------------------------------------------------
 
-### marshmallow-mongoengine : schémas
+### Schémas
 
 ```python
 from marshmallow_mongoengine import ModelSchema
@@ -289,6 +291,8 @@ Génère schemas marshmallow pour API
 
 Fonctionne avec Pymogo, TxMongo, motor_asyncio
 
+# webargs
+
 ## webargs : désérialisation de requêtes
 
 Désérialise et valide les requêtes HTTP
@@ -297,9 +301,7 @@ Prend en charge nativement les principaux serveurs web :
 
 Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, aiohttp
 
----------------------------------------------------
-
-### Sans webargs
+## Sans webargs
 
 ```python
 from flask import Flask, request
@@ -308,7 +310,7 @@ app = Flask(__name__)
 
 team = TeamSchema()
 
-@app.route("/")
+@app.route("/teams/")
 def index():
     # Désérialisation et validation
     body = request.json
@@ -316,7 +318,7 @@ def index():
         team_data = team_schema.load(body)
     except ValidationError as exc:
         abort(422)
-    # Traitement
+    # Traitement
     team = Team(**team_data)
     team.save()
     return team_schema.dump(team), 201
@@ -324,7 +326,7 @@ def index():
 
 ---------------------------------------------------
 
-### Avec webargs (1)
+## Avec webargs (1)
 
 ```python
 from flask import Flask
@@ -333,7 +335,7 @@ from webargs.flaskparser import use_args
 app = Flask(__name__)
 
 @app.route("/")
-@use_args(TeamSchema, location='query')
+@use_args(TeamSchema, location='json')
 def index(team_data):
     team = Team(**team_data)
     team.save()
@@ -342,7 +344,7 @@ def index(team_data):
 
 ---------------------------------------------------
 
-### Avec webargs (2)
+## Avec webargs (2)
 
 Inclure les erreurs de validation dans la réponse
 
@@ -356,7 +358,9 @@ def handle_error(err):
     return jsonify({"errors": messages}), err.code
 ```
 
-## apispec : Documentation OpenAPI (Swagger) 
+# apispec
+
+## apispec : Documentation OpenAPI (Swagger)
 
 Génération de la documentation OpenAPI
 
@@ -364,8 +368,63 @@ Introspection des schémas marshmallow
 
 Prise en charge de flask, bottle, tornado via apispec-webframeworks
 
+## webargs + apispec : exemple
 
-## flask-rest-api
+```python
+from flask import Flask, request
+from marshmallow import Schema, fields
+from webargs.flaskparser import use_args
+from apispec import APISpec
+from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec_webframeworks.flask import FlaskPlugin
+
+spec = APISpec(
+    title="Team manager",
+    version="1.0.0",
+    openapi_version="3.0.2",
+    plugins=[FlaskPlugin(), MarshmallowPlugin()],
+)
+
+app = Flask(__name__)
+```
+---------------------------------------------------
+
+```python
+@app.route("/teams/", methods=["POST"])
+@use_args(TeamSchema, location='json')
+def post_team():
+    """Post team
+    ---
+    post:
+      description: Add a new team.
+      requestBody:
+        description: Team
+        required: true
+        content:
+          application/json:
+            schema: TeamSchema
+      responses:
+        200:
+          content:
+            application/json:
+              schema: TeamSchema
+    """
+def index(team_data):
+    team = Team(**team_data)
+    team.save()
+    return team_schema.dump(team), 201
+
+spec.path(view=post_team)
+```
+
+## webargs + apispec : limitations
+
+- Duplication : YAML
+- Sérialisation manuelle
+
+# flask-smorest
+
+## flask-smorest : marshmallow + webargs + apispec
 
 - Injection de paramètres avec webargs
 - Doc auto avec apispec, sans YAML
@@ -374,12 +433,20 @@ Prise en charge de flask, bottle, tornado via apispec-webframeworks
 - Pagination
 
 
-# Utilisateurs
+# Communauté, vie, feuille de route
 
-## Star / watch GitHub
+- Rythme des sorties, versions, etc.
+- Star / watch GitHub
+- Inclusivité, bonnes pratiques
+
+
+# Projets
 
 ## Nos projets
 
+Citer nos projets utilisant marshmallow/flask-smorest
+
+Description rapide, type d'utilisation, leçons
 
 
 # Questions
