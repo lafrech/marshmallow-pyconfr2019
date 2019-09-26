@@ -106,6 +106,7 @@ Utilisations typiques :
 
 # marshmallow
 
+
 ## Fonctionnalités
 
 - Sérialisation vers _dict_ ou JSON
@@ -432,6 +433,99 @@ spec.path(view=post_team)
 - ETag
 - Pagination
 
+## Structuration d'une ressource
+
+- ``Blueprint`` → ressource
+- ``MethodView`` → GET, POST, PUT, DELETE
+
+---------------------------------------------------
+
+```python
+@blp.route('/')
+class Teams(MethodView):
+
+    @blp.arguments(TeamQueryArgsSchema, location='query')
+    @blp.response(TeamSchema(many=True))
+    def get(self, args):
+        """List teams"""
+        return Team.query.filter_by(**args)
+
+    @blp.arguments(TeamSchema)
+    @blp.response(TeamSchema, code=201)
+    def post(self, new_item):
+        """Add a new team"""
+        item = Team(**new_item)
+        db.session.add(item)
+        db.session.commit()
+        return item
+```
+
+---------------------------------------------------
+
+```python
+
+@blp.route('/<uuid:item_id>')
+class TeamsById(MethodView):
+
+    @blp.response(TeamSchema)
+    def get(self, item_id):
+        """Get team by ID"""
+        return Team.query.get_or_404(item_id)
+
+    @blp.arguments(TeamSchema)
+    @blp.response(TeamSchema)
+    def put(self, new_item, item_id):
+        """Update an existing team"""
+        item = Team.query.get_or_404(item_id)
+        TeamSchema().update(item, new_item)
+        db.session.add(item)
+        db.session.commit()
+        return item
+
+    @blp.response(code=204)
+    def delete(self, item_id):
+        """Delete a team"""
+        item = Team.query.get_or_404(item_id)
+        db.session.delete(item)
+        db.session.commit()
+```
+
+## Pagination
+
+- Pagination `a posteriori` des resources renvoyant une liste
+- Validation des paramètres d'entrée ``page`` et ``page_size`` (query args)
+- Éléments de pagination renvoyés dans un Header
+
+```python
+headers['X-Pagination']
+{
+    'total': 1000, 'total_pages': 200,
+    'page': 2, 'first_page': 1, 'last_page': 200,
+    'previous_page': 1, 'next_page': 3,
+}
+```
+
+## Pagination d'un curseur de base de donnée
+
+```python
+from flask_smorest import Page
+
+class SQLCursorPage(Page):
+    @property
+    def item_count(self):
+        return self.collection.count()
+
+
+@blp.route('/')
+class Teams(MethodView):
+
+    @blp.arguments(TeamQueryArgsSchema, location='query')
+    @blp.response(TeamSchema(many=True))
+    @blp.paginate(SQLCursorPage)
+    def get(self, args):
+        """List teams"""
+        return Team.query.filter_by(**args)
+```
 
 # Communauté, vie, feuille de route
 
@@ -453,4 +547,3 @@ Description rapide, type d'utilisation, leçons
 
 
 # Contact
-
