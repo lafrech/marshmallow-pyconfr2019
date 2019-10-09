@@ -134,29 +134,41 @@ schema.dumps(team)
 # '{"name": "A-Team", "creation_date": "1983-01-23T00:00:00"}'
 ```
 
-## Séparation modèle / vue
+## Séparation modèle / vue (1)
 
+Modèle
 
 ```python
-# Modèle
-
 import orm
+
+class Member(orm.Model):
+    first_name = orm.StringField()
+    last_name = orm.StringField()
+    birthdate = orm.DateTimeField()
+    age = orm.IntegerField()
+    password = orm.StringField()
 
 class Team(orm.Model):
     name = orm.StringField()
-    creation_date = orm.DateTiemField()
+    creation_date = orm.DateTimeField()
+    members = orm.ManyToMany(Member)
+```
 
-# Schéma
+## Séparation modèle / vue (2)
 
-import datetime as dt
+Schémas
+
+```python
 import marshmallow as ma
 
 class TeamSchema(ma.Schema):
     name = ma.fields.String()
     creation_date = ma.fields.DateTime()
+```
 
-# Vue
+Ressources
 
+```python
 from .models import Team
 from .schemas import TeamSchema
 
@@ -168,10 +180,66 @@ schema.dump(team)
 # {'name': 'A-Team', 'creation_date': '1983-01-23T00:00:00'}
 ```
 
+## Read-only, Write-only
+
+```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String()
+    last_name = ma.fields.String()
+    birthdate = ma.fields.DateTime()
+    age = ma.fields.Int(dump_only=True)
+    password = ma.fields.Str(load_only=True)
+
+member = Member.get_one(last_name='Venkman')
+
+MemberSchema().dump(member)
+# {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': '1960-09-06T00:00:00', 'age': 59}
+```
+
+## Sélection dynamique de champs
+
+```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String()
+    last_name = ma.fields.String()
+    birthdate = ma.fields.DateTime()
+
+MemberSchema(only=('last_name', )).dump(member)
+# {'last_name': "Venkman"}
+
+MemberSchema(exclude=('last_name', )).dump(member)
+# {'first_name': "Peter", 'birthdate': dt.datetime(1960, 9, 6)}
+```
+
+## Séparation des noms de champs entre modèle et API
+
+```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String(data_key="firstName")
+    last_name = ma.fields.String(data_key="lastName")
+    birthdate = ma.fields.DateTime(data_key="birth-date")
+
+MemberSchema().dump(member)
+# {'firstName': "Peter", 'lastName': "Venkman", 'birth-date': '1960-09-06T00:00:00'}
+```
+
+## Collections
+
+```python
+members = Member.get_all()
+
+schema = MemberSchema(many=True, only=('first_name', 'last_name'))
+
+schema.dump(members)
+# [
+#     {'first_name': "Egon", 'last_name': "Spengler",},
+#     {'first_name': "Peter", 'last_name': "Venkman",},
+# ]
+```
+
 ## Champs imbriqués
 
 ```python
-
 class MemberSchema(ma.Schema):
     first_name = ma.fields.String()
     last_name = ma.fields.String()
@@ -181,13 +249,7 @@ class TeamSchema(ma.Schema):
     name = ma.fields.String()
     members = ma.fields.List(ma.fields.Nested(MemberSchema))
 
-team = {
-    'name': 'Ghostbusters',
-    'members': [
-        {'first_name': "Egon", 'last_name': "Spengler", 'birthdate': dt.datetime(1958, 10, 2)},
-        {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': dt.datetime(1960, 9, 6)},
-    ]
-}
+team = Team.get_one(name='Ghostbusters')
 
 TeamSchema().dumps(team)
 # {'name': 'Ghostbusters',
@@ -197,18 +259,30 @@ TeamSchema().dumps(team)
 # ]}
 ```
 
+## Pré-post traitements
+
+``pre_load`` / ``post_load`` / ``pre_dump`` / ``post_dump``
+
+```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String()
+    last_name = ma.fields.String()
+    birthdate = ma.fields.DateTime()
+
+    @ma.post_load
+    def make_instance(self, data, **kwargs):
+        return Member(**data)
+
+    member = MemberSchema().load(
+        {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': dt.datetime(1960, 9, 6)}
+    )
+    member.first_name
+    # 'Peter'
+```
 
 
 ## TODO
 
-- dump_only, load_only
-- only, exclude
-- data_key
-- attribute
-- collections: many
-
-- post/pre load/dump
-- loading to object
 
 - validation:
     required
