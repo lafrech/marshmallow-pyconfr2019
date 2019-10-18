@@ -1,5 +1,8 @@
-%Marshmallow
-%De la sérialization à la construction d'une API REST
+% Marshmallow \
+  De la sérialization \
+  à la construction d'une API REST
+% Jérôme Lafréchoux
+% PyConFR - 3 novembre 2019
 
 ## Sommaire
 
@@ -40,12 +43,12 @@ Objet → JSON → Objet
 ```python
 import json
 
-team = {'name': 'A-Team'}
+user = {"name": "Roger"}
 
 json.dumps()
-# '{"name": "A-Team"}'
+# '{'name": "Roger"}'
 
-json.loads('{"name": "A-Team"}')
+json.loads('{"name": "Roger"}')
 # {'name': 'A-Team'}
 ```
 
@@ -57,7 +60,7 @@ JSON ne définit que des types basiques.
 import json
 import datetime as dt
 
-team = {'name': 'A-Team', 'creation_date': dt.datetime(1983, 1, 23)}
+user = {"name": "Roger", "birth_date": dt.datetime(1983, 1, 23)}
 
 json.dumps()
 # TypeError: datetime.datetime(1983, 1, 23, 0, 0) is not JSON serializable
@@ -119,19 +122,19 @@ Utilisations typiques :
 import datetime as dt
 import marshmallow as ma
 
-class TeamSchema(ma.Schema):
+class UserSchema(ma.Schema):
     name = ma.fields.String()
-    creation_date = ma.fields.DateTime()
+    birth_date = ma.fields.DateTime()
 
-schema = TeamSchema()
+schema = UserSchema()
 
-team = {'name': 'A-Team', 'creation_date': dt.datetime(1983, 1, 23)}
+user = {"name": "Roger", "birth_date": dt.datetime(1983, 1, 23)}
 
-schema.dump(team)
-# {'name': 'A-Team', 'creation_date': '1983-01-23T00:00:00'}
+schema.dump(user)
+# {'name': 'Roger', 'birth_date': '1983-01-23T00:00:00'}
 
-schema.dumps(team)
-# '{"name": "A-Team", "creation_date": "1983-01-23T00:00:00"}'
+schema.dumps(user)
+# '{"name": "Roger", "birth_date": "1983-01-23T00:00:00"}'
 ```
 
 ## Séparation modèle / vue (1)
@@ -172,12 +175,12 @@ Ressources
 from .models import Team
 from .schemas import TeamSchema
 
-team = Team.get(name='A-Team')
+team = Team.get(name="Ghostbusters")
 
 schema = TeamSchema()
 
 schema.dump(team)
-# {'name': 'A-Team', 'creation_date': '1983-01-23T00:00:00'}
+# {'name': 'Ghostbusters', 'creation_date': '1983-01-23T00:00:00'}
 ```
 
 ## Read-only, Write-only
@@ -193,7 +196,7 @@ class MemberSchema(ma.Schema):
 member = Member.get_one(last_name='Venkman')
 
 MemberSchema().dump(member)
-# {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': '1960-09-06T00:00:00', 'age': 59}
+# {'first_name': 'Peter', 'last_name': 'Venkman', 'birthdate': '1960-09-06T00:00:00', 'age': 59}
 ```
 
 ## Sélection dynamique de champs
@@ -204,14 +207,14 @@ class MemberSchema(ma.Schema):
     last_name = ma.fields.String()
     birthdate = ma.fields.DateTime()
 
-MemberSchema(only=('last_name', )).dump(member)
-# {'last_name': "Venkman"}
+MemberSchema(only=("last_name", )).dump(member)
+# {'last_name': 'Venkman'}
 
-MemberSchema(exclude=('last_name', )).dump(member)
-# {'first_name': "Peter", 'birthdate': dt.datetime(1960, 9, 6)}
+MemberSchema(exclude=("last_name", )).dump(member)
+# {'first_name': 'Peter', 'birthdate': dt.datetime(1960, 9, 6)}
 ```
 
-## Séparation des noms de champs entre modèle et API
+## Découplage des noms de champs entre modèle et API
 
 ```python
 class MemberSchema(ma.Schema):
@@ -220,7 +223,7 @@ class MemberSchema(ma.Schema):
     birthdate = ma.fields.DateTime(data_key="birth-date")
 
 MemberSchema().dump(member)
-# {'firstName': "Peter", 'lastName': "Venkman", 'birth-date': '1960-09-06T00:00:00'}
+# {'firstName': 'Peter', 'lastName': 'Venkman', 'birth-date': '1960-09-06T00:00:00'}
 ```
 
 ## Collections
@@ -228,12 +231,12 @@ MemberSchema().dump(member)
 ```python
 members = Member.get_all()
 
-schema = MemberSchema(many=True, only=('first_name', 'last_name'))
+schema = MemberSchema(many=True, only=("first_name", "last_name"))
 
 schema.dump(members)
 # [
-#     {'first_name': "Egon", 'last_name': "Spengler",},
-#     {'first_name': "Peter", 'last_name': "Venkman",},
+#     {'first_name': 'Egon', 'last_name': 'Spengler',},
+#     {'first_name': 'Peter', 'last_name': 'Venkman',},
 # ]
 ```
 
@@ -249,7 +252,7 @@ class TeamSchema(ma.Schema):
     name = ma.fields.String()
     members = ma.fields.List(ma.fields.Nested(MemberSchema))
 
-team = Team.get_one(name='Ghostbusters')
+team = Team.get_one(name="Ghostbusters")
 
 TeamSchema().dumps(team)
 # {'name': 'Ghostbusters',
@@ -274,7 +277,7 @@ class MemberSchema(ma.Schema):
         return Member(**data)
 
     member = MemberSchema().load(
-        {'first_name': "Peter", 'last_name': "Venkman", 'birthdate': dt.datetime(1960, 9, 6)}
+        {"first_name": "Peter", "last_name": "Venkman", "birthdate": dt.datetime(1960, 9, 6)}
     )
     member.first_name
     # 'Peter'
@@ -319,7 +322,7 @@ import mongoengine as me
 
 class Team(me.Document):
     name = me.StringField(max_length=40)
-    members = me.ListField(me.ReferenceField('Member'))
+    members = me.ListField(me.ReferenceField("Member"))
 
 class Member(me.Document):
     first_name = me.StringField()
@@ -342,7 +345,7 @@ class MemberSchema(ModelSchema):
     class Meta:
         model = Member
 
-team = Team.objects.get(name='Ghostbusters')
+team = Team.objects.get(name="Ghostbusters")
 
 TeamSchema().dump(team)
 # {'id': 1,
@@ -352,7 +355,7 @@ TeamSchema().dump(team)
 #   {'first_name': 'Peter', 'last_name': 'Venkman', 'birthdate': '1960-09-06T00:00:00'}
 # ]}
 
-TeamSchema().load({'name': 'This name is too long to pass validation.'})
+TeamSchema().load({"name": "This name is too long to pass validation."})
 # marshmallow.exceptions.ValidationError: {'name': ['Longer than maximum length 40.']}
 ```
 
@@ -410,7 +413,7 @@ from webargs.flaskparser import use_args
 app = Flask(__name__)
 
 @app.route("/")
-@use_args(TeamSchema, location='json')
+@use_args(TeamSchema, location="json")
 def index(team_data):
     team = Team(**team_data)
     team.save()
@@ -466,7 +469,7 @@ app = Flask(__name__)
 
 ```python
 @app.route("/teams/", methods=["POST"])
-@use_args(TeamSchema, location='json')
+@use_args(TeamSchema, location="json")
 def post_team():
     """Post team
     ---
@@ -515,10 +518,10 @@ spec.path(view=post_team)
 ---------------------------------------------------
 
 ```python
-@blp.route('/')
+@blp.route("/")
 class Teams(MethodView):
 
-    @blp.arguments(TeamQueryArgsSchema, location='query')
+    @blp.arguments(TeamQueryArgsSchema, location="query")
     @blp.response(TeamSchema(many=True))
     def get(self, args):
         """List teams"""
@@ -538,7 +541,7 @@ class Teams(MethodView):
 
 ```python
 
-@blp.route('/<uuid:item_id>')
+@blp.route("/<uuid:item_id>")
 class TeamsById(MethodView):
 
     @blp.response(TeamSchema)
@@ -571,12 +574,12 @@ class TeamsById(MethodView):
 - Éléments de pagination renvoyés dans un Header
 
 ```python
-headers['X-Pagination']
-{
-    'total': 1000, 'total_pages': 200,
-    'page': 2, 'first_page': 1, 'last_page': 200,
-    'previous_page': 1, 'next_page': 3,
-}
+headers["X-Pagination"]
+# {
+#     'total': 1000, 'total_pages': 200,
+#     'page': 2, 'first_page': 1, 'last_page': 200,
+#     'previous_page': 1, 'next_page': 3,
+# }
 ```
 
 ## Pagination d'un curseur de base de donnée
@@ -590,10 +593,10 @@ class SQLCursorPage(Page):
         return self.collection.count()
 
 
-@blp.route('/')
+@blp.route("/")
 class Teams(MethodView):
 
-    @blp.arguments(TeamQueryArgsSchema, location='query')
+    @blp.arguments(TeamQueryArgsSchema, location="query")
     @blp.response(TeamSchema(many=True))
     @blp.paginate(SQLCursorPage)
     def get(self, args):
