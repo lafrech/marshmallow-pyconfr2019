@@ -199,7 +199,7 @@ MemberSchema().dump(member)
 # {'first_name': 'Peter', 'last_name': 'Venkman', 'birthdate': '1960-09-06T00:00:00', 'age': 59}
 ```
 
-## Sélection dynamique de champs
+## Sélection dynamique de champs
 
 ```python
 class MemberSchema(ma.Schema):
@@ -214,7 +214,7 @@ MemberSchema(exclude=("last_name", )).dump(member)
 # {'first_name': 'Peter', 'birthdate': dt.datetime(1960, 9, 6)}
 ```
 
-## Découplage des noms de champs entre modèle et API
+## Découplage des noms de champs entre modèle et API
 
 ```python
 class MemberSchema(ma.Schema):
@@ -223,7 +223,7 @@ class MemberSchema(ma.Schema):
     birthdate = ma.fields.DateTime(data_key="birth-date")
 
 MemberSchema().dump(member)
-# {'firstName': 'Peter', 'lastName': 'Venkman', 'birth-date': '1960-09-06T00:00:00'}
+# {'firstName': 'Peter', 'lastName': 'Venkman', 'birth-date': '1960-09-06T00:00:00'}
 ```
 
 ## Collections
@@ -262,7 +262,7 @@ TeamSchema().dumps(team)
 # ]}
 ```
 
-## Pré-post traitements
+## Pré-post traitements
 
 ``pre_load`` / ``post_load`` / ``pre_dump`` / ``post_dump``
 
@@ -283,14 +283,31 @@ class MemberSchema(ma.Schema):
     # 'Peter'
 ```
 
+## Validation (1)
 
-## TODO
+Validation à la désérialisation
 
+- Champs obligatoires
+- Validation des valeurs
 
-- validation:
-    required
-    length,range,...
-    errors dict structure
+```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String(validate=ma.validate.Length(min=2, max=50))
+    last_name = ma.fields.String(required=True)
+    birthdate = ma.fields.DateTime()
+```
+
+## Validation (2)
+
+Structuration des messages d'erreur
+
+```python
+MemberSchema().load({"first_name": "V"})
+# marshmallow.exceptions.ValidationError: {
+#     'last_name': ['Missing data for required field.'],
+#     'first_name': ['Length must be between 2 and 50.']
+# }
+```
 
 ## Questions
 
@@ -567,7 +584,7 @@ class TeamsById(MethodView):
         db.session.commit()
 ```
 
-## Pagination
+## Pagination
 
 - Pagination `a posteriori` des resources renvoyant une liste
 - Validation des paramètres d'entrée ``page`` et ``page_size`` (query args)
@@ -582,7 +599,7 @@ headers["X-Pagination"]
 # }
 ```
 
-## Pagination d'un curseur de base de donnée
+## Pagination d'un curseur de base de donnée
 
 ```python
 from flask_smorest import Page
