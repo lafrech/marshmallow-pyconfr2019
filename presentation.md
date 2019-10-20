@@ -384,7 +384,7 @@ Utilise marshmallow pour serialization/désérialisation MongoDB BSON
 
 Génère schemas marshmallow pour API
 
-Fonctionne avec Pymogo, TxMongo, motor_asyncio
+Fonctionne avec Pymongo, TxMongo, motor_asyncio
 
 # webargs
 
@@ -481,6 +481,7 @@ spec = APISpec(
 )
 
 app = Flask(__name__)
+spec.init_app(app)
 ```
 ---------------------------------------------------
 
@@ -519,11 +520,10 @@ spec.path(view=post_team)
 
 # flask-smorest
 
-## flask-smorest : marshmallow + webargs + apispec
+## Fonctionnalités
 
-- Injection de paramètres avec webargs
-- Doc auto avec apispec, sans YAML
-- MethodView + Blueprint
+- Sérialisation / désérialisation des entrées / sorties : webargs
+- Documentation OpenAPI automatique (ou presque) : apispec
 - ETag
 - Pagination
 
@@ -621,18 +621,58 @@ class Teams(MethodView):
         return Team.query.filter_by(**args)
 ```
 
-# Communauté, vie, feuille de route
+## ETag
 
-- Rythme des sorties, versions, etc.
-- Star / watch GitHub
-- Inclusivité, bonnes pratiques
+TODO
+
+## Démo
 
 
-# Projets
 
-## Nos projets
+# Communauté, feuille de route
 
-Citer nos projets utilisant marshmallow/flask-smorest
+## Cycle de publication (1)
+
+Actuellement, deux branches de marshmallow maintenues.
+
+|Branche|Python|Date de publication|
+|-|-|-|
+|2.x|2.7+, 3.4+|25 septembre 2015|
+|3.x|3.5+|18 août 2019|
+
+## Cycle de publication (2)
+
+marshmallow est utilisé dans beaucoup de bibliothèques et _frameworks_.
+
+Versions majeures peu fréquentes, nombreux changements.
+
+|Version|Date de publication|
+|-|-|
+|1.0.0|16 novembre 2014|
+|2.0.0a1|25 avril 2015|
+|2.0.0|25 septembre 2015|
+|3.0.0a1|26 février 2017|
+|3.0.0|18 août 2019|
+
+webargs, apispec : versions majeures plus fréquentes, changements limités.
+
+## Bonnes pratiques
+
+- Intégration continue, pytest, flake8, black, mypy
+- Python 3 partout
+- Communauté inclusive
+
+# Nos projets
+
+## Nobatek/INEF4
+
+## Proleps
+
+## Hit2Gap - BERServer
+
+## Nature4Cities
+
+## Sigopti
 
 Description rapide, type d'utilisation, leçons
 
@@ -640,4 +680,4 @@ Description rapide, type d'utilisation, leçons
 # Questions
 
 
-# Contact
+# Contact, liens
