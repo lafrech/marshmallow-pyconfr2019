@@ -621,11 +621,11 @@ class Teams(MethodView):
         return Team.query.filter_by(**args)
 ```
 
-## ETag
+## ETag
 
 TODO
 
-## Démo
+## Démo
 
 
 
@@ -664,20 +664,71 @@ webargs, apispec : versions majeures plus fréquentes, changements limités.
 
 # Nos projets
 
-## Nobatek/INEF4
+## Nobatek/INEF4
 
-## Proleps
+Institut National pour la Transition Énergétique et Environnementale du Bâtiment
 
-## Hit2Gap - BERServer
+## Proleps
 
-## Nature4Cities
+Gestion énergétique de patrimoine immobilier
+
+Planification de rénovation
+
+- MongoDB / umongo
+- marshmallow 2
+- flask-smorest
+
+https://www.nobatek.inef4.com/produits/proleps/
+
+## BEMServer (Hit2Gap EU H2020)
+
+BuildingEnergyManagement Server
+
+Plateforme _open-source_ de gestion énergétique du bâtiment
+
+Trois bases de données
+
+- Modèle ontologique du bâtiment
+    - Ontologie ifcOWL étendue
+    - Jena SPARQL, webservice
+    - Lecture / écrite en BDD manuelle, pas d'ORM
+
+- Séries temporelles (HDF5)
+    - Écriture via Pandas
+    - Contourne marshmallow dans l'API (performance)
+
+- Evènements (SQLite)
+    - SQLAlchemy
+
+https://www.bemserver.org/
 
 ## Sigopti
 
-Description rapide, type d'utilisation, leçons
+Plugin _open-source_ de QGis
 
+Pré-étude de faisabilité de réseaux de chaleur
+
+Calculs asynchrones sur serveur distant via API web
+
+- Solver IPOPT
+- Pyomo
+- Celery
+- Redis
+- flask-smorest
+
+## Nature4Cities (EU H2020)
+
+Plateforme de comparaison et d'évaluation de solutions fondées sur la nature
+
+Indicateurs socio-économiques, environnementaux, urbanisme...
+
+Calculs sycnrhones sur serveur distant via API web
+
+https://www.nature4cities.eu/
 
 # Questions
 
 
-# Contact, liens
+# Liens
+
+
