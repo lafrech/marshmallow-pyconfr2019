@@ -623,10 +623,24 @@ class Teams(MethodView):
 
 ## ETag
 
-TODO
+- Validation de cache
+- Requêtes conditionnelles
+
+### GET : Économie de bande passante
+
+- `If-None-Match: "686897696a7c876b7e"`
+- Optionnel dans la requête
+- Si ETag correspond (ressource non modifiée) : 304
+
+### PUT/DELETE : Contrôle de concurrence optimiste
+
+- `If-Match: "686897696a7c876b7e"`
+- Obligatoire dans la requête
+- Si ETag manquant dans la requête : 428
+- Si ETag ne correspond pas (ressource modifiée) : 412
+
 
 ## Démo
-
 
 
 # Communauté, feuille de route
