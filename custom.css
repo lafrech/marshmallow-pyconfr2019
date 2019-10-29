@@ -1,3 +1,12 @@
 .reveal pre code {
 	max-height: initial;
 }
+
+pre.ascii-art {
+        display: table;
+        width: initial;
+}
+pre.ascii-art code {
+        display: table;
+        margin: auto;
+}

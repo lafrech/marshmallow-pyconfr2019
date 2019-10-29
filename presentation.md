@@ -78,7 +78,7 @@ json.dumps(user)
     - Lisible
 
 - Inconvénients
-    - Ne représente que quelques types Python de base
+    - Ne représente que quelques types basiques
 
 ## Bibliothèque de sérialisation (1)
 
@@ -108,6 +108,24 @@ Objet → _dict_ → JSON → _dict_ → Objet
 - Sérialisation vers _dict_ ou JSON
 - Désérialisation depuis _dict_ ou JSON
 - Validation lors de la désérialisation
+
+
+```{.ascii-art}
+ --------                ------------
+|        | === dump ==> |            |
+| Object |              | dict / str |
+|        | <== load === |            |
+ --------                ------------
+```
+
+```{.ascii-art}
+ --------                 ------
+|        | === dumps ==> |      |
+| Object |               | JSON |
+|        | <== loads === |      |
+ --------                 ------
+```
+
 
 ## Schémas et champs
 
@@ -310,20 +328,35 @@ MemberSchema().load({"first_name": "V"})
 
 # Intégration ORM / ODM
 
-## Intégration avec différents ORM/ODM
+## ORM / ODM
 
 - ORM : _Object-Relation Mapping_
 - ODM : _Object-Document Mapping_
 
-- Intégration
-    - Génération automatique de schémas marshmallow depuis le modèle
-    - Types et validateurs inférés des classes du modèle
-    - Permet de générer des schémas d'API en minimisant la duplication de code
+- Couche d'abstraction entre objets et base de donnée
+- Définit le modèle avec des schémas
 
-- Exemples
-    - SQLAlchemy → marshmallow-sqlalchemy
-    - peewee → marshmallow-peewee
-    - MongoEngine → marshmallow-mongoengine
+## Intégration ORM/ODM - marshmallow
+
+- Génération automatique de schémas marshmallow depuis le modèle
+- Types et validateurs inférés des classes du modèle
+- Permet de générer des schémas d'API en minimisant la duplication de code
+
+```{.ascii-art}
+                      ---------------------------
+                     |                           |
+ ----------          |          --------         ▼         ------------
+|          |      Schema       |        |     Schema      |            |
+| Database | <== ORM / ODM ==> | Object | <==   API   ==> | dict / str |
+|          |                   |        |   marshmallow   |            |
+ ----------                     --------                   ------------
+```
+
+## Exemples d'intégration
+
+- SQLAlchemy → marshmallow-sqlalchemy
+- peewee → marshmallow-peewee
+- MongoEngine → marshmallow-mongoengine
 
 ## marshmallow-mongoengine
 
