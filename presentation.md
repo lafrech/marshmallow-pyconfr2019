@@ -764,4 +764,6 @@ https://www.nature4cities.eu/
 
 # Liens
 
+https://lafrech.github.io/marshmallow-pyconfr2019/
 
+https://github.com/marshmallow-code
