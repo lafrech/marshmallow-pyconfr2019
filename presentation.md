@@ -15,12 +15,18 @@
 
 ## C'est quoi?
 
-Codage d'objets Python sous une forme adaptée pour
+- Codage d'objets Python sous une forme adaptée pour
+    - Sauvegarde
+    - Transport
 
-- Sauvegarde
-- Transport
+- Processus réversible (désérialisation)
 
-Processus réversible (désérialisation)
+- Utilisations typiques
+    - Format d'échange (ex: service web)
+    - Fichier de configuration
+    - Sauvegarde de résultats de calcul
+    - Stockage temporaire sur disque
+    - ...
 
 ## Pickle
 
@@ -34,8 +40,6 @@ Objet → _Byte stream_ → Objet
     - Compatibilité : désérialisation nécessite Python
     - Sécurité : injection de code
 
-Utilisation typique : stockage temporaire
-
 ## json (1)
 
 Objet → JSON → Objet
@@ -45,16 +49,17 @@ import json
 
 user = {"name": "Roger"}
 
-json.dumps()
-# '{'name": "Roger"}'
+json.dumps(user)
+# '{"name": "Roger"}'
 
 json.loads('{"name": "Roger"}')
-# {'name': 'A-Team'}
+# {'name': 'Roger'}
 ```
 
 ## json (2)
 
-JSON ne définit que des types basiques.
+Mais JSON ne définit que des types basiques :
+_number_, _string_, _boolean_, _array_, _object_, _null_.
 
 ```python
 import json
@@ -62,7 +67,7 @@ import datetime as dt
 
 user = {"name": "Roger", "birth_date": dt.datetime(1983, 1, 23)}
 
-json.dumps()
+json.dumps(user)
 # TypeError: datetime.datetime(1983, 1, 23, 0, 0) is not JSON serializable
 ```
 
@@ -73,13 +78,11 @@ json.dumps()
     - Lisible
 
 - Inconvénients
-    - Ne représente que certains types Python de base
-
-Note : Plus ou moins équivalent à YAML, XML.
+    - Ne représente que quelques types Python de base
 
 ## Bibliothèque de sérialisation (1)
 
-Transforme un objet Python en dictionnaire de types simples, JSONisable.
+Transforme un objet Python en dictionnaire de types simples, _JSONisable_
 
 Objet → _dict_ → Objet
 
@@ -98,17 +101,7 @@ Objet → _dict_ → JSON → _dict_ → Objet
     - Nécessite de définir la sérialisation des objets non standards
     - Bibliothèque non standard
 
-## Bibliothèque de sérialisation (3)
-
-Utilisations typiques :
-
-- Format d'échange (ex: service web)
-- Fichier de configuration
-- Sauvegarde de résultats de calcul
-- ...
-
 # marshmallow
-
 
 ## Fonctionnalités
 
@@ -229,9 +222,13 @@ MemberSchema().dump(member)
 ## Collections
 
 ```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String(data_key="firstName")
+    last_name = ma.fields.String(data_key="lastName")
+
 members = Member.get_all()
 
-schema = MemberSchema(many=True, only=("first_name", "last_name"))
+schema = MemberSchema(many=True)
 
 schema.dump(members)
 # [
@@ -311,24 +308,22 @@ MemberSchema().load({"first_name": "V"})
 
 ## Questions
 
-
-# Intégration ORM/ODM
+# Intégration ORM / ODM
 
 ## Intégration avec différents ORM/ODM
 
-ORM : Object-Relation Mapping
+- ORM : _Object-Relation Mapping_
+- ODM : _Object-Document Mapping_
 
-ODM : Object-Document Mapping
+- Intégration
+    - Génération automatique de schémas marshmallow depuis le modèle
+    - Types et validateurs inférés des classes du modèle
+    - Permet de générer des schémas d'API en minimisant la duplication de code
 
-Génération automatique de schémas marshmallow depuis le modèle
-
-Types et validateurs inférés des classes du modèle
-
-Permet de générer des schémas d'API en minimisant la duplication de code
-
-- SQLAlchemy → marshmallow-sqlalchemy
-- peewee → marshmallow-peewee
-- MongoEngine → marshmallow-mongoengine
+- Exemples
+    - SQLAlchemy → marshmallow-sqlalchemy
+    - peewee → marshmallow-peewee
+    - MongoEngine → marshmallow-mongoengine
 
 ## marshmallow-mongoengine
 
@@ -378,13 +373,10 @@ TeamSchema().load({"name": "This name is too long to pass validation."})
 
 ## umongo : ODM MongoDB
 
-Alternative à MongoEngine + marshmallow-mongoengine
-
-Utilise marshmallow pour serialization/désérialisation MongoDB BSON
-
-Génère schemas marshmallow pour API
-
-Fonctionne avec Pymongo, TxMongo, motor_asyncio
+- Alternative à MongoEngine + marshmallow-mongoengine
+- Utilise marshmallow pour sérialization/désérialisation MongoDB BSON
+- Génère schemas marshmallow pour API
+- Fonctionne avec PyMongo, TxMongo, Motor
 
 # webargs
 
@@ -405,12 +397,11 @@ app = Flask(__name__)
 
 team = TeamSchema()
 
-@app.route("/teams/")
-def index():
+@app.route("/teams/", methods=['POST'])
+def post():
     # Désérialisation et validation
-    body = request.json
     try:
-        team_data = team_schema.load(body)
+        team_data = team_schema.load(request.json)
     except ValidationError as exc:
         abort(422)
     # Traitement
@@ -429,9 +420,9 @@ from webargs.flaskparser import use_args
 
 app = Flask(__name__)
 
-@app.route("/")
+@app.route("/", methods=['POST'])
 @use_args(TeamSchema, location="json")
-def index(team_data):
+def post(team_data):
     team = Team(**team_data)
     team.save()
     return team_schema.dump(team), 201
@@ -505,17 +496,16 @@ def post_team():
             application/json:
               schema: TeamSchema
     """
-def index(team_data):
     team = Team(**team_data)
     team.save()
-    return team_schema.dump(team), 201
+    return TeamSchema().dump(team), 201
 
 spec.path(view=post_team)
 ```
 
 ## webargs + apispec : limitations
 
-- Duplication : YAML
+- Duplication : docstring YAML
 - Sérialisation manuelle
 
 # flask-smorest
@@ -524,8 +514,8 @@ spec.path(view=post_team)
 
 - Sérialisation / désérialisation des entrées / sorties : webargs
 - Documentation OpenAPI automatique (ou presque) : apispec
-- ETag
 - Pagination
+- ETag
 
 ## Structuration d'une ressource
 
@@ -623,22 +613,18 @@ class Teams(MethodView):
 
 ## ETag
 
-- Validation de cache
-- Requêtes conditionnelles
+- Identifie une version spécifique d'une ressource
 
-### GET : Économie de bande passante
+- GET : Économie de bande passante
+    - `If-None-Match: "686897696a7c876b7e"`
+    - Optionnel dans la requête
+    - Si ETag correspond (ressource non modifiée), `304 Not Modified`
 
-- `If-None-Match: "686897696a7c876b7e"`
-- Optionnel dans la requête
-- Si ETag correspond (ressource non modifiée) : 304
-
-### PUT/DELETE : Contrôle de concurrence optimiste
-
-- `If-Match: "686897696a7c876b7e"`
-- Obligatoire dans la requête
-- Si ETag manquant dans la requête : 428
-- Si ETag ne correspond pas (ressource modifiée) : 412
-
+- PUT/DELETE : Empêche les mises à jour simultanées
+    - `If-Match: "686897696a7c876b7e"`
+    - Obligatoire dans la requête
+    - Si ETag manquant dans la requête, `428 Precondition required`
+    - Si ETag ne correspond pas (ressource modifiée), `412 Precondition failed`
 
 ## Démo
 
@@ -736,7 +722,7 @@ Plateforme de comparaison et d'évaluation de solutions fondées sur la nature
 
 Indicateurs socio-économiques, environnementaux, urbanisme...
 
-Calculs sycnrhones sur serveur distant via API web
+Calculs synchrones sur serveur distant via API web
 
 https://www.nature4cities.eu/
 
