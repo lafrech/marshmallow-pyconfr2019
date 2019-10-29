@@ -115,12 +115,22 @@ De la sérialization<br />
 </section>
 <section><section id="la-sérialisation" class="title-slide slide level1"><h1>La sérialisation</h1></section><section id="cest-quoi" class="slide level2">
 <h2>C’est quoi?</h2>
-<p>Codage d’objets Python sous une forme adaptée pour</p>
+<ul>
+<li>Codage d’objets Python sous une forme adaptée pour
 <ul>
 <li>Sauvegarde</li>
 <li>Transport</li>
+</ul></li>
+<li><p>Processus réversible (désérialisation)</p></li>
+<li>Utilisations typiques
+<ul>
+<li>Format d’échange (ex: service web)</li>
+<li>Fichier de configuration</li>
+<li>Sauvegarde de résultats de calcul</li>
+<li>Stockage temporaire sur disque</li>
+<li>…</li>
+</ul></li>
 </ul>
-<p>Processus réversible (désérialisation)</p>
 </section><section id="pickle" class="slide level2">
 <h2>Pickle</h2>
 <p>Objet → <em>Byte stream</em> → Objet</p>
@@ -136,7 +146,6 @@ De la sérialization<br />
 <li>Sécurité : injection de code</li>
 </ul></li>
 </ul>
-<p>Utilisation typique : stockage temporaire</p>
 </section><section id="json-1" class="slide level2">
 <h2>json (1)</h2>
 <p>Objet → JSON → Objet</p>
@@ -144,20 +153,20 @@ De la sérialization<br />
 <a class="sourceLine" id="cb1-2" title="2"></a>
 <a class="sourceLine" id="cb1-3" title="3">user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>}</a>
 <a class="sourceLine" id="cb1-4" title="4"></a>
-<a class="sourceLine" id="cb1-5" title="5">json.dumps()</a>
-<a class="sourceLine" id="cb1-6" title="6"><span class="co"># &#39;{&#39;name&quot;: &quot;Roger&quot;}&#39;</span></a>
+<a class="sourceLine" id="cb1-5" title="5">json.dumps(user)</a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="co"># &#39;{&quot;name&quot;: &quot;Roger&quot;}&#39;</span></a>
 <a class="sourceLine" id="cb1-7" title="7"></a>
 <a class="sourceLine" id="cb1-8" title="8">json.loads(<span class="st">&#39;{&quot;name&quot;: &quot;Roger&quot;}&#39;</span>)</a>
-<a class="sourceLine" id="cb1-9" title="9"><span class="co"># {&#39;name&#39;: &#39;A-Team&#39;}</span></a></code></pre></div>
+<a class="sourceLine" id="cb1-9" title="9"><span class="co"># {&#39;name&#39;: &#39;Roger&#39;}</span></a></code></pre></div>
 </section><section id="json-2" class="slide level2">
 <h2>json (2)</h2>
-<p>JSON ne définit que des types basiques.</p>
+<p>Mais JSON ne définit que des types basiques : <em>number</em>, <em>string</em>, <em>boolean</em>, <em>array</em>, <em>object</em>, <em>null</em>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="im">import</span> json</a>
 <a class="sourceLine" id="cb2-2" title="2"><span class="im">import</span> datetime <span class="im">as</span> dt</a>
 <a class="sourceLine" id="cb2-3" title="3"></a>
 <a class="sourceLine" id="cb2-4" title="4">user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>, <span class="st">&quot;birth_date&quot;</span>: dt.datetime(<span class="dv">1983</span>, <span class="dv">1</span>, <span class="dv">23</span>)}</a>
 <a class="sourceLine" id="cb2-5" title="5"></a>
-<a class="sourceLine" id="cb2-6" title="6">json.dumps()</a>
+<a class="sourceLine" id="cb2-6" title="6">json.dumps(user)</a>
 <a class="sourceLine" id="cb2-7" title="7"><span class="co"># TypeError: datetime.datetime(1983, 1, 23, 0, 0) is not JSON serializable</span></a></code></pre></div>
 </section><section id="json-3" class="slide level2">
 <h2>json (3)</h2>
@@ -169,13 +178,12 @@ De la sérialization<br />
 </ul></li>
 <li>Inconvénients
 <ul>
-<li>Ne représente que certains types Python de base</li>
+<li>Ne représente que quelques types Python de base</li>
 </ul></li>
 </ul>
-<p>Note : Plus ou moins équivalent à YAML, XML.</p>
 </section><section id="bibliothèque-de-sérialisation-1" class="slide level2">
 <h2>Bibliothèque de sérialisation (1)</h2>
-<p>Transforme un objet Python en dictionnaire de types simples, JSONisable.</p>
+<p>Transforme un objet Python en dictionnaire de types simples, <em>JSONisable</em></p>
 <p>Objet → <em>dict</em> → Objet</p>
 <p>Surcouche de json</p>
 <p>Objet → <em>dict</em> → JSON → <em>dict</em> → Objet</p>
@@ -193,15 +201,6 @@ De la sérialization<br />
 <li>Nécessite de définir la sérialisation des objets non standards</li>
 <li>Bibliothèque non standard</li>
 </ul></li>
-</ul>
-</section><section id="bibliothèque-de-sérialisation-3" class="slide level2">
-<h2>Bibliothèque de sérialisation (3)</h2>
-<p>Utilisations typiques :</p>
-<ul>
-<li>Format d’échange (ex: service web)</li>
-<li>Fichier de configuration</li>
-<li>Sauvegarde de résultats de calcul</li>
-<li>…</li>
 </ul>
 </section></section>
 <section><section id="marshmallow" class="title-slide slide level1"><h1>marshmallow</h1></section><section id="fonctionnalités" class="slide level2">
@@ -299,15 +298,19 @@ De la sérialization<br />
 <a class="sourceLine" id="cb9-7" title="7"><span class="co"># {&#39;firstName&#39;: &#39;Peter&#39;, &#39;lastName&#39;: &#39;Venkman&#39;, &#39;birth-date&#39;: &#39;1960-09-06T00:00:00&#39;}</span></a></code></pre></div>
 </section><section id="collections" class="slide level2">
 <h2>Collections</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb10-1" title="1">members <span class="op">=</span> Member.get_all()</a>
-<a class="sourceLine" id="cb10-2" title="2"></a>
-<a class="sourceLine" id="cb10-3" title="3">schema <span class="op">=</span> MemberSchema(many<span class="op">=</span><span class="va">True</span>, only<span class="op">=</span>(<span class="st">&quot;first_name&quot;</span>, <span class="st">&quot;last_name&quot;</span>))</a>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">class</span> MemberSchema(ma.Schema):</a>
+<a class="sourceLine" id="cb10-2" title="2">    first_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;firstName&quot;</span>)</a>
+<a class="sourceLine" id="cb10-3" title="3">    last_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;lastName&quot;</span>)</a>
 <a class="sourceLine" id="cb10-4" title="4"></a>
-<a class="sourceLine" id="cb10-5" title="5">schema.dump(members)</a>
-<a class="sourceLine" id="cb10-6" title="6"><span class="co"># [</span></a>
-<a class="sourceLine" id="cb10-7" title="7"><span class="co">#     {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;,},</span></a>
-<a class="sourceLine" id="cb10-8" title="8"><span class="co">#     {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;,},</span></a>
-<a class="sourceLine" id="cb10-9" title="9"><span class="co"># ]</span></a></code></pre></div>
+<a class="sourceLine" id="cb10-5" title="5">members <span class="op">=</span> Member.get_all()</a>
+<a class="sourceLine" id="cb10-6" title="6"></a>
+<a class="sourceLine" id="cb10-7" title="7">schema <span class="op">=</span> MemberSchema(many<span class="op">=</span><span class="va">True</span>)</a>
+<a class="sourceLine" id="cb10-8" title="8"></a>
+<a class="sourceLine" id="cb10-9" title="9">schema.dump(members)</a>
+<a class="sourceLine" id="cb10-10" title="10"><span class="co"># [</span></a>
+<a class="sourceLine" id="cb10-11" title="11"><span class="co">#     {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;,},</span></a>
+<a class="sourceLine" id="cb10-12" title="12"><span class="co">#     {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;,},</span></a>
+<a class="sourceLine" id="cb10-13" title="13"><span class="co"># ]</span></a></code></pre></div>
 </section><section id="champs-imbriqués" class="slide level2">
 <h2>Champs imbriqués</h2>
 <div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">class</span> MemberSchema(ma.Schema):</a>
@@ -366,17 +369,23 @@ De la sérialization<br />
 </section><section id="questions" class="slide level2">
 <h2>Questions</h2>
 </section></section>
-<section><section id="intégration-ormodm" class="title-slide slide level1"><h1>Intégration ORM/ODM</h1></section><section id="intégration-avec-différents-ormodm" class="slide level2">
+<section><section id="intégration-orm-odm" class="title-slide slide level1"><h1>Intégration ORM / ODM</h1></section><section id="intégration-avec-différents-ormodm" class="slide level2">
 <h2>Intégration avec différents ORM/ODM</h2>
-<p>ORM : Object-Relation Mapping</p>
-<p>ODM : Object-Document Mapping</p>
-<p>Génération automatique de schémas marshmallow depuis le modèle</p>
-<p>Types et validateurs inférés des classes du modèle</p>
-<p>Permet de générer des schémas d’API en minimisant la duplication de code</p>
+<ul>
+<li>ORM : <em>Object-Relation Mapping</em></li>
+<li><p>ODM : <em>Object-Document Mapping</em></p></li>
+<li>Intégration
+<ul>
+<li>Génération automatique de schémas marshmallow depuis le modèle</li>
+<li>Types et validateurs inférés des classes du modèle</li>
+<li>Permet de générer des schémas d’API en minimisant la duplication de code</li>
+</ul></li>
+<li>Exemples
 <ul>
 <li>SQLAlchemy → marshmallow-sqlalchemy</li>
 <li>peewee → marshmallow-peewee</li>
 <li>MongoEngine → marshmallow-mongoengine</li>
+</ul></li>
 </ul>
 </section><section id="marshmallow-mongoengine" class="slide level2">
 <h2>marshmallow-mongoengine</h2>
@@ -418,10 +427,12 @@ De la sérialization<br />
 <a class="sourceLine" id="cb16-22" title="22"><span class="co"># marshmallow.exceptions.ValidationError: {&#39;name&#39;: [&#39;Longer than maximum length 40.&#39;]}</span></a></code></pre></div>
 </section><section id="umongo-odm-mongodb" class="slide level2">
 <h2>umongo : ODM MongoDB</h2>
-<p>Alternative à MongoEngine + marshmallow-mongoengine</p>
-<p>Utilise marshmallow pour serialization/désérialisation MongoDB BSON</p>
-<p>Génère schemas marshmallow pour API</p>
-<p>Fonctionne avec Pymongo, TxMongo, motor_asyncio</p>
+<ul>
+<li>Alternative à MongoEngine + marshmallow-mongoengine</li>
+<li>Utilise marshmallow pour sérialization/désérialisation MongoDB BSON</li>
+<li>Génère schemas marshmallow pour API</li>
+<li>Fonctionne avec PyMongo, TxMongo, Motor</li>
+</ul>
 </section></section>
 <section><section id="webargs" class="title-slide slide level1"><h1>webargs</h1></section><section id="webargs-désérialisation-de-requêtes" class="slide level2">
 <h2>webargs : désérialisation de requêtes</h2>
@@ -436,18 +447,17 @@ De la sérialization<br />
 <a class="sourceLine" id="cb17-4" title="4"></a>
 <a class="sourceLine" id="cb17-5" title="5">team <span class="op">=</span> TeamSchema()</a>
 <a class="sourceLine" id="cb17-6" title="6"></a>
-<a class="sourceLine" id="cb17-7" title="7"><span class="at">@app.route</span>(<span class="st">&quot;/teams/&quot;</span>)</a>
-<a class="sourceLine" id="cb17-8" title="8"><span class="kw">def</span> index():</a>
+<a class="sourceLine" id="cb17-7" title="7"><span class="at">@app.route</span>(<span class="st">&quot;/teams/&quot;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</a>
+<a class="sourceLine" id="cb17-8" title="8"><span class="kw">def</span> post():</a>
 <a class="sourceLine" id="cb17-9" title="9">    <span class="co"># Désérialisation et validation</span></a>
-<a class="sourceLine" id="cb17-10" title="10">    body <span class="op">=</span> request.json</a>
-<a class="sourceLine" id="cb17-11" title="11">    <span class="cf">try</span>:</a>
-<a class="sourceLine" id="cb17-12" title="12">        team_data <span class="op">=</span> team_schema.load(body)</a>
-<a class="sourceLine" id="cb17-13" title="13">    <span class="cf">except</span> ValidationError <span class="im">as</span> exc:</a>
-<a class="sourceLine" id="cb17-14" title="14">        abort(<span class="dv">422</span>)</a>
-<a class="sourceLine" id="cb17-15" title="15">    <span class="co"># Traitement</span></a>
-<a class="sourceLine" id="cb17-16" title="16">    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</a>
-<a class="sourceLine" id="cb17-17" title="17">    team.save()</a>
-<a class="sourceLine" id="cb17-18" title="18">    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></a></code></pre></div>
+<a class="sourceLine" id="cb17-10" title="10">    <span class="cf">try</span>:</a>
+<a class="sourceLine" id="cb17-11" title="11">        team_data <span class="op">=</span> team_schema.load(request.json)</a>
+<a class="sourceLine" id="cb17-12" title="12">    <span class="cf">except</span> ValidationError <span class="im">as</span> exc:</a>
+<a class="sourceLine" id="cb17-13" title="13">        abort(<span class="dv">422</span>)</a>
+<a class="sourceLine" id="cb17-14" title="14">    <span class="co"># Traitement</span></a>
+<a class="sourceLine" id="cb17-15" title="15">    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</a>
+<a class="sourceLine" id="cb17-16" title="16">    team.save()</a>
+<a class="sourceLine" id="cb17-17" title="17">    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></a></code></pre></div>
 </section><section id="avec-webargs-1" class="slide level2">
 <h2>Avec webargs (1)</h2>
 <div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb18-1" title="1"><span class="im">from</span> flask <span class="im">import</span> Flask</a>
@@ -455,9 +465,9 @@ De la sérialization<br />
 <a class="sourceLine" id="cb18-3" title="3"></a>
 <a class="sourceLine" id="cb18-4" title="4">app <span class="op">=</span> Flask(<span class="va">__name__</span>)</a>
 <a class="sourceLine" id="cb18-5" title="5"></a>
-<a class="sourceLine" id="cb18-6" title="6"><span class="at">@app.route</span>(<span class="st">&quot;/&quot;</span>)</a>
+<a class="sourceLine" id="cb18-6" title="6"><span class="at">@app.route</span>(<span class="st">&quot;/&quot;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</a>
 <a class="sourceLine" id="cb18-7" title="7"><span class="at">@use_args</span>(TeamSchema, location<span class="op">=</span><span class="st">&quot;json&quot;</span>)</a>
-<a class="sourceLine" id="cb18-8" title="8"><span class="kw">def</span> index(team_data):</a>
+<a class="sourceLine" id="cb18-8" title="8"><span class="kw">def</span> post(team_data):</a>
 <a class="sourceLine" id="cb18-9" title="9">    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</a>
 <a class="sourceLine" id="cb18-10" title="10">    team.save()</a>
 <a class="sourceLine" id="cb18-11" title="11">    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></a></code></pre></div>
@@ -516,16 +526,15 @@ De la sérialization<br />
 <a class="sourceLine" id="cb21-17" title="17"><span class="co">            application/json:</span></a>
 <a class="sourceLine" id="cb21-18" title="18"><span class="co">              schema: TeamSchema</span></a>
 <a class="sourceLine" id="cb21-19" title="19"><span class="co">    &quot;&quot;&quot;</span></a>
-<a class="sourceLine" id="cb21-20" title="20"><span class="kw">def</span> index(team_data):</a>
-<a class="sourceLine" id="cb21-21" title="21">    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</a>
-<a class="sourceLine" id="cb21-22" title="22">    team.save()</a>
-<a class="sourceLine" id="cb21-23" title="23">    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></a>
-<a class="sourceLine" id="cb21-24" title="24"></a>
-<a class="sourceLine" id="cb21-25" title="25">spec.path(view<span class="op">=</span>post_team)</a></code></pre></div>
+<a class="sourceLine" id="cb21-20" title="20">    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</a>
+<a class="sourceLine" id="cb21-21" title="21">    team.save()</a>
+<a class="sourceLine" id="cb21-22" title="22">    <span class="cf">return</span> TeamSchema().dump(team), <span class="dv">201</span></a>
+<a class="sourceLine" id="cb21-23" title="23"></a>
+<a class="sourceLine" id="cb21-24" title="24">spec.path(view<span class="op">=</span>post_team)</a></code></pre></div>
 </section><section id="webargs-apispec-limitations" class="slide level2">
 <h2>webargs + apispec : limitations</h2>
 <ul>
-<li>Duplication : YAML</li>
+<li>Duplication : docstring YAML</li>
 <li>Sérialisation manuelle</li>
 </ul>
 </section></section>
@@ -534,8 +543,8 @@ De la sérialization<br />
 <ul>
 <li>Sérialisation / désérialisation des entrées / sorties : webargs</li>
 <li>Documentation OpenAPI automatique (ou presque) : apispec</li>
-<li>ETag</li>
 <li>Pagination</li>
+<li>ETag</li>
 </ul>
 </section><section id="structuration-dune-ressource" class="slide level2">
 <h2>Structuration d’une ressource</h2>
@@ -624,21 +633,20 @@ De la sérialization<br />
 </section><section id="etag" class="slide level2">
 <h2>ETag</h2>
 <ul>
-<li>Validation de cache</li>
-<li>Requêtes conditionnelles</li>
-</ul>
-<h3 id="get-économie-de-bande-passante">GET : Économie de bande passante</h3>
+<li><p>Identifie une version spécifique d’une ressource</p></li>
+<li>GET : Économie de bande passante
 <ul>
 <li><code>If-None-Match: &quot;686897696a7c876b7e&quot;</code></li>
 <li>Optionnel dans la requête</li>
-<li>Si ETag correspond (ressource non modifiée) : 304</li>
-</ul>
-<h3 id="putdelete-contrôle-de-concurrence-optimiste">PUT/DELETE : Contrôle de concurrence optimiste</h3>
+<li>Si ETag correspond (ressource non modifiée), <code>304 Not Modified</code></li>
+</ul></li>
+<li>PUT/DELETE : Empêche les mises à jour simultanées
 <ul>
 <li><code>If-Match: &quot;686897696a7c876b7e&quot;</code></li>
 <li>Obligatoire dans la requête</li>
-<li>Si ETag manquant dans la requête : 428</li>
-<li>Si ETag ne correspond pas (ressource modifiée) : 412</li>
+<li>Si ETag manquant dans la requête, <code>428 Precondition required</code></li>
+<li>Si ETag ne correspond pas (ressource modifiée), <code>412 Precondition failed</code></li>
+</ul></li>
 </ul>
 </section><section id="démo" class="slide level2">
 <h2>Démo</h2>
@@ -762,7 +770,7 @@ De la sérialization<br />
 <h2>Nature4Cities (EU H2020)</h2>
 <p>Plateforme de comparaison et d’évaluation de solutions fondées sur la nature</p>
 <p>Indicateurs socio-économiques, environnementaux, urbanisme…</p>
-<p>Calculs sycnrhones sur serveur distant via API web</p>
+<p>Calculs synchrones sur serveur distant via API web</p>
 <p>https://www.nature4cities.eu/</p>
 </section></section>
 <section><section id="questions-1" class="title-slide slide level1"><h1>Questions</h1></section></section>
