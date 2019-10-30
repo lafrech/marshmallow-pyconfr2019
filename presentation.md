@@ -4,12 +4,14 @@
 % Jérôme Lafréchoux
 % PyConFR - 3 novembre 2019
 
-## Sommaire
+# Plan
 
 - La sérialisation
 - marshmallow
 - L'écosystème marshmallow
 - Construction d'une API REST: flask-smorest
+
+![](assets/marshmallow-logo-white.png)
 
 # La sérialisation
 
@@ -78,7 +80,7 @@ json.dumps(user)
     - Lisible
 
 - Inconvénients
-    - Ne représente que quelques types Python de base
+    - Ne représente que quelques types basiques
 
 ## Bibliothèque de sérialisation (1)
 
@@ -101,13 +103,31 @@ Objet → _dict_ → JSON → _dict_ → Objet
     - Nécessite de définir la sérialisation des objets non standards
     - Bibliothèque non standard
 
-# marshmallow
+# marshmallow {data-background-image="assets/marshmallow-stay-puft.webp"}
+
 
 ## Fonctionnalités
 
 - Sérialisation vers _dict_ ou JSON
 - Désérialisation depuis _dict_ ou JSON
 - Validation lors de la désérialisation
+
+
+```{.ascii-art}
+ --------                ------------
+|        | === dump ==> |            |
+| Object |              | dict / str |
+|        | <== load === |            |
+ --------                ------------
+```
+
+```{.ascii-art}
+ --------                 ------
+|        | === dumps ==> |      |
+| Object |               | JSON |
+|        | <== loads === |      |
+ --------                 ------
+```
 
 ## Schémas et champs
 
@@ -310,20 +330,35 @@ MemberSchema().load({"first_name": "V"})
 
 # Intégration ORM / ODM
 
-## Intégration avec différents ORM/ODM
+## ORM / ODM
 
 - ORM : _Object-Relation Mapping_
 - ODM : _Object-Document Mapping_
 
-- Intégration
-    - Génération automatique de schémas marshmallow depuis le modèle
-    - Types et validateurs inférés des classes du modèle
-    - Permet de générer des schémas d'API en minimisant la duplication de code
+- Couche d'abstraction entre objets et base de donnée
+- Définit le modèle avec des schémas
 
-- Exemples
-    - SQLAlchemy → marshmallow-sqlalchemy
-    - peewee → marshmallow-peewee
-    - MongoEngine → marshmallow-mongoengine
+## Intégration ORM/ODM - marshmallow
+
+- Génération automatique de schémas marshmallow depuis le modèle
+- Types et validateurs inférés des classes du modèle
+- Permet de générer des schémas d'API en minimisant la duplication de code
+
+```{.ascii-art}
+                      ---------------------------
+                     |                           |
+ ----------          |          --------         ▼         ------------
+|          |      Schema       |        |     Schema      |            |
+| Database | <== ORM / ODM ==> | Object | <==   API   ==> | dict / str |
+|          |                   |        |   marshmallow   |            |
+ ----------                     --------                   ------------
+```
+
+## Exemples d'intégration
+
+- SQLAlchemy → marshmallow-sqlalchemy
+- peewee → marshmallow-peewee
+- MongoEngine → marshmallow-mongoengine
 
 ## marshmallow-mongoengine
 
@@ -454,6 +489,8 @@ Introspection des schémas marshmallow
 
 Prise en charge de flask, bottle, tornado via apispec-webframeworks
 
+![](assets/openapi-logo.png)
+
 ## webargs + apispec : exemple
 
 ```python
@@ -508,7 +545,7 @@ spec.path(view=post_team)
 - Duplication : docstring YAML
 - Sérialisation manuelle
 
-# flask-smorest
+# flask-smorest {data-background-image="assets/smore.gif" .dark}
 
 ## Fonctionnalités
 
@@ -517,10 +554,15 @@ spec.path(view=post_team)
 - Pagination
 - ETag
 
+## Environnement
+
+- marshmallow
+- Flask
+
 ## Structuration d'une ressource
 
-- ``Blueprint`` → ressource
-- ``MethodView`` → GET, POST, PUT, DELETE
+- ``flask.Blueprint`` → ressource
+- ``flask.MethodView`` → GET, POST, PUT, DELETE
 
 ---------------------------------------------------
 
@@ -626,7 +668,7 @@ class Teams(MethodView):
     - Si ETag manquant dans la requête, `428 Precondition required`
     - Si ETag ne correspond pas (ressource modifiée), `412 Precondition failed`
 
-## Démo
+## Démo {data-background-image="assets/demo.gif"}
 
 
 # Communauté, feuille de route
@@ -668,6 +710,10 @@ webargs, apispec : versions majeures plus fréquentes, changements limités.
 
 Institut National pour la Transition Énergétique et Environnementale du Bâtiment
 
+![](assets/nobatek-inef4-logo.png)
+
+https://www.nobatek.inef4.com
+
 ## Proleps
 
 Gestion énergétique de patrimoine immobilier
@@ -678,13 +724,21 @@ Planification de rénovation
 - marshmallow 2
 - flask-smorest
 
+![](assets/proleps-logo.png)
+
 https://www.nobatek.inef4.com/produits/proleps/
 
-## BEMServer (Hit2Gap EU H2020)
+## BEMServer (Hit2Gap EU H2020) (1)
 
 BuildingEnergyManagement Server
 
 Plateforme _open-source_ de gestion énergétique du bâtiment
+
+![](assets/bemserver-logo.png)
+
+https://www.bemserver.org/
+
+## BEMServer (Hit2Gap EU H2020) (2)
 
 Trois bases de données
 
@@ -699,8 +753,6 @@ Trois bases de données
 
 - Evènements (SQLite)
     - SQLAlchemy
-
-https://www.bemserver.org/
 
 ## Sigopti
 
@@ -724,11 +776,14 @@ Indicateurs socio-économiques, environnementaux, urbanisme...
 
 Calculs synchrones sur serveur distant via API web
 
+![](assets/nature4cities-logo.png)
+
 https://www.nature4cities.eu/
 
 # Questions
 
-
 # Liens
 
+https://lafrech.github.io/marshmallow-pyconfr2019/
 
+https://github.com/marshmallow-code

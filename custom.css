@@ -1,3 +1,22 @@
 .reveal pre code {
-	max-height: initial;
+    max-height: initial;
+}
+
+.reveal section img {
+    background: inherit;
+    border: inherit;
+    box-shadow: inherit;
+}
+
+pre.ascii-art {
+    display: table;
+    width: initial;
+}
+pre.ascii-art code {
+    display: table;
+    margin: auto;
+}
+
+section.dark h1 {
+    color: black;
 }
