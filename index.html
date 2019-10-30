@@ -211,11 +211,11 @@ De la sérialization<br />
 <li>Désérialisation depuis <em>dict</em> ou JSON</li>
 <li>Validation lors de la désérialisation</li>
 </ul>
-<pre class="ascii-art"><code> --------                ------------
-|        | === dump ==&gt; |            |
-| Object |              | dict / str |
-|        | &lt;== load === |            |
- --------                ------------</code></pre>
+<pre class="ascii-art"><code> --------                ------
+|        | === dump ==&gt; |      |
+| Object |              | dict |
+|        | &lt;== load === |      |
+ --------                ------</code></pre>
 <pre class="ascii-art"><code> --------                 ------
 |        | === dumps ==&gt; |      |
 | Object |               | JSON |
@@ -397,11 +397,11 @@ De la sérialization<br />
 </ul>
 <pre class="ascii-art"><code>                      ---------------------------
                      |                           |
- ----------          |          --------         ▼         ------------
-|          |      Schema       |        |     Schema      |            |
-| Database | &lt;== ORM / ODM ==&gt; | Object | &lt;==   API   ==&gt; | dict / str |
-|          |                   |        |   marshmallow   |            |
- ----------                     --------                   ------------</code></pre>
+ ----------          |          --------         ▼         -------------
+|          |      Schema       |        |     Schema      |             |
+| Database | &lt;== ORM / ODM ==&gt; | Object | &lt;==   API   ==&gt; | dict / JSON |
+|          |                   |        |   marshmallow   |             |
+ ----------                     --------                   -------------</code></pre>
 </section><section id="exemples-dintégration" class="slide level2">
 <h2>Exemples d’intégration</h2>
 <ul>
