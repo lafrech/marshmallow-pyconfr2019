@@ -4,14 +4,18 @@
 % Jérôme Lafréchoux
 % PyConFR - 3 novembre 2019
 
+
 # Plan
 
 - La sérialisation
 - marshmallow
 - L'écosystème marshmallow
 - Construction d'une API REST: flask-smorest
+- Développer avec marshmallow
+- Nos projets
 
 ![](assets/marshmallow-logo-white.png)
+
 
 # La sérialisation
 
@@ -103,8 +107,8 @@ Objet → _dict_ → JSON → _dict_ → Objet
     - Nécessite de définir la sérialisation des objets non standards
     - Bibliothèque non standard
 
-# marshmallow {data-background-image="assets/marshmallow-stay-puft.webp"}
 
+# marshmallow {data-background-image="assets/marshmallow-stay-puft.webp"}
 
 ## Fonctionnalités
 
@@ -327,6 +331,7 @@ MemberSchema().load({"first_name": "V"})
 ```
 
 ## Questions
+
 
 # Intégration ORM / ODM
 
@@ -671,7 +676,7 @@ class Teams(MethodView):
 ## Démo {data-background-image="assets/demo.gif"}
 
 
-# Communauté, feuille de route
+# Développer avec marshmallow
 
 ## Cycle de publication (1)
 
@@ -701,8 +706,9 @@ webargs, apispec : versions majeures plus fréquentes, changements limités.
 ## Bonnes pratiques
 
 - Intégration continue, pytest, flake8, black, mypy
-- Python 3 partout
+- Python 3, annotations
 - Communauté inclusive
+
 
 # Nos projets
 
@@ -780,7 +786,9 @@ Calculs synchrones sur serveur distant via API web
 
 [https://www.nature4cities.eu/](https://www.nature4cities.eu/)
 
+
 # Questions
+
 
 # Liens
 
