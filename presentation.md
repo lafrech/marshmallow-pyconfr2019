@@ -712,7 +712,7 @@ Institut National pour la Transition Énergétique et Environnementale du Bâtim
 
 ![](assets/nobatek-inef4-logo.png)
 
-https://www.nobatek.inef4.com
+[https://www.nobatek.inef4.com](https://www.nobatek.inef4.com)
 
 ## Proleps
 
@@ -726,7 +726,7 @@ Planification de rénovation
 
 ![](assets/proleps-logo.png)
 
-https://www.nobatek.inef4.com/produits/proleps/
+[https://www.nobatek.inef4.com/produits/proleps/](https://www.nobatek.inef4.com/produits/proleps/)
 
 ## BEMServer (Hit2Gap EU H2020) (1)
 
@@ -736,7 +736,7 @@ Plateforme _open-source_ de gestion énergétique du bâtiment
 
 ![](assets/bemserver-logo.png)
 
-https://www.bemserver.org/
+[https://www.bemserver.org/](https://www.bemserver.org/)
 
 ## BEMServer (Hit2Gap EU H2020) (2)
 
@@ -778,12 +778,12 @@ Calculs synchrones sur serveur distant via API web
 
 ![](assets/nature4cities-logo.png)
 
-https://www.nature4cities.eu/
+[https://www.nature4cities.eu/](https://www.nature4cities.eu/)
 
 # Questions
 
 # Liens
 
-https://lafrech.github.io/marshmallow-pyconfr2019/
+[https://lafrech.github.io/marshmallow-pyconfr2019/](https://lafrech.github.io/marshmallow-pyconfr2019/)
 
-https://github.com/marshmallow-code
+[https://github.com/marshmallow-code](https://github.com/marshmallow-code)
