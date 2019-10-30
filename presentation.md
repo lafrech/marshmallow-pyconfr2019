@@ -4,12 +4,14 @@
 % Jérôme Lafréchoux
 % PyConFR - 3 novembre 2019
 
-## Sommaire
+# Plan
 
 - La sérialisation
 - marshmallow
 - L'écosystème marshmallow
 - Construction d'une API REST: flask-smorest
+
+![](assets/marshmallow-logo-white.png)
 
 # La sérialisation
 
@@ -101,7 +103,8 @@ Objet → _dict_ → JSON → _dict_ → Objet
     - Nécessite de définir la sérialisation des objets non standards
     - Bibliothèque non standard
 
-# marshmallow
+# marshmallow {data-background-image="assets/marshmallow-stay-puft.webp"}
+
 
 ## Fonctionnalités
 
@@ -125,7 +128,6 @@ Objet → _dict_ → JSON → _dict_ → Objet
 |        | <== loads === |      |
  --------                 ------
 ```
-
 
 ## Schémas et champs
 
@@ -487,6 +489,8 @@ Introspection des schémas marshmallow
 
 Prise en charge de flask, bottle, tornado via apispec-webframeworks
 
+![](assets/openapi-logo.png)
+
 ## webargs + apispec : exemple
 
 ```python
@@ -541,7 +545,7 @@ spec.path(view=post_team)
 - Duplication : docstring YAML
 - Sérialisation manuelle
 
-# flask-smorest
+# flask-smorest {data-background-image="assets/smore.gif" .dark}
 
 ## Fonctionnalités
 
@@ -550,10 +554,15 @@ spec.path(view=post_team)
 - Pagination
 - ETag
 
+## Environnement
+
+- marshmallow
+- Flask
+
 ## Structuration d'une ressource
 
-- ``Blueprint`` → ressource
-- ``MethodView`` → GET, POST, PUT, DELETE
+- ``flask.Blueprint`` → ressource
+- ``flask.MethodView`` → GET, POST, PUT, DELETE
 
 ---------------------------------------------------
 
@@ -659,7 +668,7 @@ class Teams(MethodView):
     - Si ETag manquant dans la requête, `428 Precondition required`
     - Si ETag ne correspond pas (ressource modifiée), `412 Precondition failed`
 
-## Démo
+## Démo {data-background-image="assets/demo.gif"}
 
 
 # Communauté, feuille de route
@@ -701,6 +710,10 @@ webargs, apispec : versions majeures plus fréquentes, changements limités.
 
 Institut National pour la Transition Énergétique et Environnementale du Bâtiment
 
+![](assets/nobatek-inef4-logo.png)
+
+https://www.nobatek.inef4.com
+
 ## Proleps
 
 Gestion énergétique de patrimoine immobilier
@@ -711,13 +724,21 @@ Planification de rénovation
 - marshmallow 2
 - flask-smorest
 
+![](assets/proleps-logo.png)
+
 https://www.nobatek.inef4.com/produits/proleps/
 
-## BEMServer (Hit2Gap EU H2020)
+## BEMServer (Hit2Gap EU H2020) (1)
 
 BuildingEnergyManagement Server
 
 Plateforme _open-source_ de gestion énergétique du bâtiment
+
+![](assets/bemserver-logo.png)
+
+https://www.bemserver.org/
+
+## BEMServer (Hit2Gap EU H2020) (2)
 
 Trois bases de données
 
@@ -732,8 +753,6 @@ Trois bases de données
 
 - Evènements (SQLite)
     - SQLAlchemy
-
-https://www.bemserver.org/
 
 ## Sigopti
 
@@ -757,10 +776,11 @@ Indicateurs socio-économiques, environnementaux, urbanisme...
 
 Calculs synchrones sur serveur distant via API web
 
+![](assets/nature4cities-logo.png)
+
 https://www.nature4cities.eu/
 
 # Questions
-
 
 # Liens
 
