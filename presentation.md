@@ -114,11 +114,11 @@ Objet → _dict_ → JSON → _dict_ → Objet
 
 
 ```{.ascii-art}
- --------                ------------
-|        | === dump ==> |            |
-| Object |              | dict / str |
-|        | <== load === |            |
- --------                ------------
+ --------                ------
+|        | === dump ==> |      |
+| Object |              | dict |
+|        | <== load === |      |
+ --------                ------
 ```
 
 ```{.ascii-art}
@@ -347,11 +347,11 @@ MemberSchema().load({"first_name": "V"})
 ```{.ascii-art}
                       ---------------------------
                      |                           |
- ----------          |          --------         ▼         ------------
-|          |      Schema       |        |     Schema      |            |
-| Database | <== ORM / ODM ==> | Object | <==   API   ==> | dict / str |
-|          |                   |        |   marshmallow   |            |
- ----------                     --------                   ------------
+ ----------          |          --------         ▼         -------------
+|          |      Schema       |        |     Schema      |             |
+| Database | <== ORM / ODM ==> | Object | <==   API   ==> | dict / JSON |
+|          |                   |        |   marshmallow   |             |
+ ----------                     --------                   -------------
 ```
 
 ## Exemples d'intégration
