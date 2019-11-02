@@ -130,13 +130,16 @@ De la sérialization<br />
 <li>Format d’échange (ex: service web)</li>
 <li>Fichier de configuration</li>
 <li>Sauvegarde de résultats de calcul</li>
-<li>Stockage temporaire sur disque</li>
 <li>…</li>
 </ul></li>
 </ul>
 </section><section id="pickle" class="slide level2">
 <h2>Pickle</h2>
-<p>Objet → <em>Byte stream</em> → Objet</p>
+<pre class="ascii-art"><code> --------                -------------
+|        | === dump ==&gt; |             |
+| Object |              | Byte stream |
+|        | &lt;== load === |             |
+ --------                -------------</code></pre>
 <ul>
 <li>Avantages
 <ul>
@@ -151,26 +154,64 @@ De la sérialization<br />
 </ul>
 </section><section id="json-1" class="slide level2">
 <h2>json (1)</h2>
-<p>Objet → JSON → Objet</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1"></a><span class="im">import</span> json</span>
-<span id="cb1-2"><a href="#cb1-2"></a></span>
-<span id="cb1-3"><a href="#cb1-3"></a>user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>}</span>
-<span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a>json.dumps(user)</span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="co"># &#39;{&quot;name&quot;: &quot;Roger&quot;}&#39;</span></span>
-<span id="cb1-7"><a href="#cb1-7"></a></span>
-<span id="cb1-8"><a href="#cb1-8"></a>json.loads(<span class="st">&#39;{&quot;name&quot;: &quot;Roger&quot;}&#39;</span>)</span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co"># {&#39;name&#39;: &#39;Roger&#39;}</span></span></code></pre></div>
+<pre class="ascii-art"><code> --------                ------
+|        | === dump ==&gt; |      |
+| Object |              | JSON |
+|        | &lt;== load === |      |
+ --------                ------</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1"></a><span class="im">import</span> json</span>
+<span id="cb3-2"><a href="#cb3-2"></a></span>
+<span id="cb3-3"><a href="#cb3-3"></a>user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>}</span>
+<span id="cb3-4"><a href="#cb3-4"></a></span>
+<span id="cb3-5"><a href="#cb3-5"></a>json.dumps(user)</span>
+<span id="cb3-6"><a href="#cb3-6"></a><span class="co"># &#39;{&quot;name&quot;: &quot;Roger&quot;}&#39;</span></span>
+<span id="cb3-7"><a href="#cb3-7"></a></span>
+<span id="cb3-8"><a href="#cb3-8"></a>json.loads(<span class="st">&#39;{&quot;name&quot;: &quot;Roger&quot;}&#39;</span>)</span>
+<span id="cb3-9"><a href="#cb3-9"></a><span class="co"># {&#39;name&#39;: &#39;Roger&#39;}</span></span></code></pre></div>
 </section><section id="json-2" class="slide level2">
 <h2>json (2)</h2>
-<p>Mais JSON ne définit que des types basiques : <em>number</em>, <em>string</em>, <em>boolean</em>, <em>array</em>, <em>object</em>, <em>null</em>.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1"></a><span class="im">import</span> json</span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
-<span id="cb2-3"><a href="#cb2-3"></a></span>
-<span id="cb2-4"><a href="#cb2-4"></a>user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>, <span class="st">&quot;birth_date&quot;</span>: dt.datetime(<span class="dv">1983</span>, <span class="dv">1</span>, <span class="dv">23</span>)}</span>
-<span id="cb2-5"><a href="#cb2-5"></a></span>
-<span id="cb2-6"><a href="#cb2-6"></a>json.dumps(user)</span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="co"># TypeError: datetime.datetime(1983, 1, 23, 0, 0) is not JSON serializable</span></span></code></pre></div>
+<p>Mais JSON ne définit que des types basiques :</p>
+<table>
+<thead>
+<tr class="header">
+<th>JSON</th>
+<th>Python</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>object</td>
+<td>dict</td>
+</tr>
+<tr class="even">
+<td>array</td>
+<td>list</td>
+</tr>
+<tr class="odd">
+<td>string</td>
+<td>str</td>
+</tr>
+<tr class="even">
+<td>number (int/float)</td>
+<td>int/float</td>
+</tr>
+<tr class="odd">
+<td>boolean</td>
+<td>bool</td>
+</tr>
+<tr class="even">
+<td>null</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1"></a><span class="im">import</span> json</span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a>user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>, <span class="st">&quot;birth_date&quot;</span>: dt.datetime(<span class="dv">1983</span>, <span class="dv">1</span>, <span class="dv">23</span>)}</span>
+<span id="cb4-5"><a href="#cb4-5"></a></span>
+<span id="cb4-6"><a href="#cb4-6"></a>json.dumps(user)</span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="co"># TypeError: datetime.datetime(1983, 1, 23, 0, 0) is not JSON serializable</span></span></code></pre></div>
 </section><section id="json-3" class="slide level2">
 <h2>json (3)</h2>
 <ul>
@@ -187,9 +228,17 @@ De la sérialization<br />
 </section><section id="bibliothèque-de-sérialisation-1" class="slide level2">
 <h2>Bibliothèque de sérialisation (1)</h2>
 <p>Transforme un objet Python en dictionnaire de types simples, <em>JSONisable</em></p>
-<p>Objet → <em>dict</em> → Objet</p>
-<p>Surcouche de json</p>
-<p>Objet → <em>dict</em> → JSON → <em>dict</em> → Objet</p>
+<pre class="ascii-art"><code> --------                ------
+|        | === dump ==&gt; |      |
+| Object |              | dict |
+|        | &lt;== load === |      |
+ --------                ------</code></pre>
+<p>Surcouche de <code>json</code></p>
+<pre class="ascii-art"><code> --------                ------                 ------
+|        | === dump ==&gt; |      |  === dump ==&gt; |      |
+| Object |              | dict |               | JSON |
+|        | &lt;== load === |      |  &lt;== load === |      |
+ --------                ------                 ------</code></pre>
 </section><section id="bibliothèque-de-sérialisation-2" class="slide level2">
 <h2>Bibliothèque de sérialisation (2)</h2>
 <ul>
@@ -213,174 +262,154 @@ De la sérialization<br />
 <li>Désérialisation depuis <em>dict</em> ou JSON</li>
 <li>Validation lors de la désérialisation</li>
 </ul>
-<pre class="ascii-art"><code> --------                ------
-|        | === dump ==&gt; |      |
-| Object |              | dict |
-|        | &lt;== load === |      |
- --------                ------</code></pre>
-<pre class="ascii-art"><code> --------                 ------
-|        | === dumps ==&gt; |      |
-| Object |               | JSON |
-|        | &lt;== loads === |      |
- --------                 ------</code></pre>
+<pre class="ascii-art"><code> --------                           -------------
+|        | ===      dump       ==&gt; |             |
+| Object |                         | dict / JSON |
+|        | &lt;== load &amp; validate === |             |
+ --------                           -------------</code></pre>
 </section><section id="schémas-et-champs" class="slide level2">
 <h2>Schémas et champs</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="im">import</span> marshmallow <span class="im">as</span> ma</span>
-<span id="cb5-3"><a href="#cb5-3"></a></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">class</span> UserSchema(ma.Schema):</span>
-<span id="cb5-5"><a href="#cb5-5"></a>    name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb5-6"><a href="#cb5-6"></a>    birth_date <span class="op">=</span> ma.fields.DateTime()</span>
-<span id="cb5-7"><a href="#cb5-7"></a></span>
-<span id="cb5-8"><a href="#cb5-8"></a>schema <span class="op">=</span> UserSchema()</span>
-<span id="cb5-9"><a href="#cb5-9"></a></span>
-<span id="cb5-10"><a href="#cb5-10"></a>user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>, <span class="st">&quot;birth_date&quot;</span>: dt.datetime(<span class="dv">1983</span>, <span class="dv">1</span>, <span class="dv">23</span>)}</span>
-<span id="cb5-11"><a href="#cb5-11"></a></span>
-<span id="cb5-12"><a href="#cb5-12"></a>schema.dump(user)</span>
-<span id="cb5-13"><a href="#cb5-13"></a><span class="co"># {&#39;name&#39;: &#39;Roger&#39;, &#39;birth_date&#39;: &#39;1983-01-23T00:00:00&#39;}</span></span>
-<span id="cb5-14"><a href="#cb5-14"></a></span>
-<span id="cb5-15"><a href="#cb5-15"></a>schema.dumps(user)</span>
-<span id="cb5-16"><a href="#cb5-16"></a><span class="co"># &#39;{&quot;name&quot;: &quot;Roger&quot;, &quot;birth_date&quot;: &quot;1983-01-23T00:00:00&quot;}&#39;</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="im">import</span> datetime <span class="im">as</span> dt</span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="im">import</span> marshmallow <span class="im">as</span> ma</span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a><span class="kw">class</span> UserSchema(ma.Schema):</span>
+<span id="cb8-5"><a href="#cb8-5"></a>    name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb8-6"><a href="#cb8-6"></a>    birth_date <span class="op">=</span> ma.fields.DateTime()</span>
+<span id="cb8-7"><a href="#cb8-7"></a></span>
+<span id="cb8-8"><a href="#cb8-8"></a>schema <span class="op">=</span> UserSchema()</span>
+<span id="cb8-9"><a href="#cb8-9"></a></span>
+<span id="cb8-10"><a href="#cb8-10"></a>user <span class="op">=</span> {<span class="st">&quot;name&quot;</span>: <span class="st">&quot;Roger&quot;</span>, <span class="st">&quot;birth_date&quot;</span>: dt.datetime(<span class="dv">1983</span>, <span class="dv">1</span>, <span class="dv">23</span>)}</span>
+<span id="cb8-11"><a href="#cb8-11"></a></span>
+<span id="cb8-12"><a href="#cb8-12"></a>schema.dump(user)</span>
+<span id="cb8-13"><a href="#cb8-13"></a><span class="co"># {&#39;name&#39;: &#39;Roger&#39;, &#39;birth_date&#39;: &#39;1983-01-23T00:00:00&#39;}</span></span>
+<span id="cb8-14"><a href="#cb8-14"></a></span>
+<span id="cb8-15"><a href="#cb8-15"></a>schema.dumps(user)</span>
+<span id="cb8-16"><a href="#cb8-16"></a><span class="co"># &#39;{&quot;name&quot;: &quot;Roger&quot;, &quot;birth_date&quot;: &quot;1983-01-23T00:00:00&quot;}&#39;</span></span></code></pre></div>
 </section><section id="séparation-modèle-vue-1" class="slide level2">
 <h2>Séparation modèle / vue (1)</h2>
 <p>Modèle</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1"></a><span class="im">import</span> orm</span>
-<span id="cb6-2"><a href="#cb6-2"></a></span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="kw">class</span> Member(orm.Model):</span>
-<span id="cb6-4"><a href="#cb6-4"></a>    first_name <span class="op">=</span> orm.StringField()</span>
-<span id="cb6-5"><a href="#cb6-5"></a>    last_name <span class="op">=</span> orm.StringField()</span>
-<span id="cb6-6"><a href="#cb6-6"></a>    birthdate <span class="op">=</span> orm.DateTimeField()</span>
-<span id="cb6-7"><a href="#cb6-7"></a>    age <span class="op">=</span> orm.IntegerField()</span>
-<span id="cb6-8"><a href="#cb6-8"></a>    password <span class="op">=</span> orm.StringField()</span>
-<span id="cb6-9"><a href="#cb6-9"></a></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="kw">class</span> Team(orm.Model):</span>
-<span id="cb6-11"><a href="#cb6-11"></a>    name <span class="op">=</span> orm.StringField()</span>
-<span id="cb6-12"><a href="#cb6-12"></a>    creation_date <span class="op">=</span> orm.DateTimeField()</span>
-<span id="cb6-13"><a href="#cb6-13"></a>    members <span class="op">=</span> orm.ManyToMany(Member)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="im">import</span> orm</span>
+<span id="cb9-2"><a href="#cb9-2"></a></span>
+<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">class</span> Member(orm.Model):</span>
+<span id="cb9-4"><a href="#cb9-4"></a>    first_name <span class="op">=</span> orm.StringField()</span>
+<span id="cb9-5"><a href="#cb9-5"></a>    last_name <span class="op">=</span> orm.StringField()</span>
+<span id="cb9-6"><a href="#cb9-6"></a>    birthdate <span class="op">=</span> orm.DateTimeField()</span>
+<span id="cb9-7"><a href="#cb9-7"></a>    age <span class="op">=</span> orm.IntegerField()</span>
+<span id="cb9-8"><a href="#cb9-8"></a>    password <span class="op">=</span> orm.StringField()</span>
+<span id="cb9-9"><a href="#cb9-9"></a></span>
+<span id="cb9-10"><a href="#cb9-10"></a><span class="kw">class</span> Team(orm.Model):</span>
+<span id="cb9-11"><a href="#cb9-11"></a>    name <span class="op">=</span> orm.StringField()</span>
+<span id="cb9-12"><a href="#cb9-12"></a>    creation_date <span class="op">=</span> orm.DateTimeField()</span>
+<span id="cb9-13"><a href="#cb9-13"></a>    members <span class="op">=</span> orm.ManyToMany(Member)</span></code></pre></div>
 </section><section id="séparation-modèle-vue-2" class="slide level2">
 <h2>Séparation modèle / vue (2)</h2>
 <p>Schémas</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1"></a><span class="im">import</span> marshmallow <span class="im">as</span> ma</span>
-<span id="cb7-2"><a href="#cb7-2"></a></span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="kw">class</span> TeamSchema(ma.Schema):</span>
-<span id="cb7-4"><a href="#cb7-4"></a>    name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb7-5"><a href="#cb7-5"></a>    creation_date <span class="op">=</span> ma.fields.DateTime()</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="im">import</span> marshmallow <span class="im">as</span> ma</span>
+<span id="cb10-2"><a href="#cb10-2"></a></span>
+<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">class</span> TeamSchema(ma.Schema):</span>
+<span id="cb10-4"><a href="#cb10-4"></a>    name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb10-5"><a href="#cb10-5"></a>    creation_date <span class="op">=</span> ma.fields.DateTime()</span></code></pre></div>
 <p>Ressources</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1"></a><span class="im">from</span> .models <span class="im">import</span> Team</span>
-<span id="cb8-2"><a href="#cb8-2"></a><span class="im">from</span> .schemas <span class="im">import</span> TeamSchema</span>
-<span id="cb8-3"><a href="#cb8-3"></a></span>
-<span id="cb8-4"><a href="#cb8-4"></a>team <span class="op">=</span> Team.get(name<span class="op">=</span><span class="st">&quot;Ghostbusters&quot;</span>)</span>
-<span id="cb8-5"><a href="#cb8-5"></a></span>
-<span id="cb8-6"><a href="#cb8-6"></a>schema <span class="op">=</span> TeamSchema()</span>
-<span id="cb8-7"><a href="#cb8-7"></a></span>
-<span id="cb8-8"><a href="#cb8-8"></a>schema.dump(team)</span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="co"># {&#39;name&#39;: &#39;Ghostbusters&#39;, &#39;creation_date&#39;: &#39;1983-01-23T00:00:00&#39;}</span></span></code></pre></div>
-</section><section id="read-only-write-only" class="slide level2">
-<h2>Read-only, Write-only</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb9-2"><a href="#cb9-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb9-3"><a href="#cb9-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb9-4"><a href="#cb9-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
-<span id="cb9-5"><a href="#cb9-5"></a>    age <span class="op">=</span> ma.fields.Int(dump_only<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb9-6"><a href="#cb9-6"></a>    password <span class="op">=</span> ma.fields.Str(load_only<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb9-7"><a href="#cb9-7"></a></span>
-<span id="cb9-8"><a href="#cb9-8"></a>member <span class="op">=</span> Member.get_one(last_name<span class="op">=</span><span class="st">&#39;Venkman&#39;</span>)</span>
-<span id="cb9-9"><a href="#cb9-9"></a></span>
-<span id="cb9-10"><a href="#cb9-10"></a>MemberSchema().dump(member)</span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co"># {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;, &#39;birthdate&#39;: &#39;1960-09-06T00:00:00&#39;, &#39;age&#39;: 59}</span></span></code></pre></div>
-</section><section id="sélection-dynamique-de-champs" class="slide level2">
-<h2>Sélection dynamique de champs</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb10-2"><a href="#cb10-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb10-3"><a href="#cb10-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb10-4"><a href="#cb10-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
-<span id="cb10-5"><a href="#cb10-5"></a></span>
-<span id="cb10-6"><a href="#cb10-6"></a>MemberSchema(only<span class="op">=</span>(<span class="st">&quot;last_name&quot;</span>, )).dump(member)</span>
-<span id="cb10-7"><a href="#cb10-7"></a><span class="co"># {&#39;last_name&#39;: &#39;Venkman&#39;}</span></span>
-<span id="cb10-8"><a href="#cb10-8"></a></span>
-<span id="cb10-9"><a href="#cb10-9"></a>MemberSchema(exclude<span class="op">=</span>(<span class="st">&quot;last_name&quot;</span>, )).dump(member)</span>
-<span id="cb10-10"><a href="#cb10-10"></a><span class="co"># {&#39;first_name&#39;: &#39;Peter&#39;, &#39;birthdate&#39;: dt.datetime(1960, 9, 6)}</span></span></code></pre></div>
-</section><section id="découplage-des-noms-de-champs-entre-modèle-et-api" class="slide level2">
-<h2>Découplage des noms de champs entre modèle et API</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb11-2"><a href="#cb11-2"></a>    first_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;firstName&quot;</span>)</span>
-<span id="cb11-3"><a href="#cb11-3"></a>    last_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;lastName&quot;</span>)</span>
-<span id="cb11-4"><a href="#cb11-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime(data_key<span class="op">=</span><span class="st">&quot;birth-date&quot;</span>)</span>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1"></a><span class="im">from</span> .models <span class="im">import</span> Team</span>
+<span id="cb11-2"><a href="#cb11-2"></a><span class="im">from</span> .schemas <span class="im">import</span> TeamSchema</span>
+<span id="cb11-3"><a href="#cb11-3"></a></span>
+<span id="cb11-4"><a href="#cb11-4"></a>team <span class="op">=</span> Team.get(name<span class="op">=</span><span class="st">&quot;Ghostbusters&quot;</span>)</span>
 <span id="cb11-5"><a href="#cb11-5"></a></span>
-<span id="cb11-6"><a href="#cb11-6"></a>MemberSchema().dump(member)</span>
-<span id="cb11-7"><a href="#cb11-7"></a><span class="co"># {&#39;firstName&#39;: &#39;Peter&#39;, &#39;lastName&#39;: &#39;Venkman&#39;, &#39;birth-date&#39;: &#39;1960-09-06T00:00:00&#39;}</span></span></code></pre></div>
-</section><section id="collections" class="slide level2">
-<h2>Collections</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb12-2"><a href="#cb12-2"></a>    first_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;firstName&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3"></a>    last_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;lastName&quot;</span>)</span>
-<span id="cb12-4"><a href="#cb12-4"></a></span>
-<span id="cb12-5"><a href="#cb12-5"></a>members <span class="op">=</span> Member.get_all()</span>
-<span id="cb12-6"><a href="#cb12-6"></a></span>
-<span id="cb12-7"><a href="#cb12-7"></a>schema <span class="op">=</span> MemberSchema(many<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb12-8"><a href="#cb12-8"></a></span>
-<span id="cb12-9"><a href="#cb12-9"></a>schema.dump(members)</span>
-<span id="cb12-10"><a href="#cb12-10"></a><span class="co"># [</span></span>
-<span id="cb12-11"><a href="#cb12-11"></a><span class="co">#     {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;,},</span></span>
-<span id="cb12-12"><a href="#cb12-12"></a><span class="co">#     {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;,},</span></span>
-<span id="cb12-13"><a href="#cb12-13"></a><span class="co"># ]</span></span></code></pre></div>
-</section><section id="champs-imbriqués" class="slide level2">
-<h2>Champs imbriqués</h2>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb13-2"><a href="#cb13-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb13-3"><a href="#cb13-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb13-4"><a href="#cb13-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
-<span id="cb13-5"><a href="#cb13-5"></a></span>
-<span id="cb13-6"><a href="#cb13-6"></a><span class="kw">class</span> TeamSchema(ma.Schema):</span>
-<span id="cb13-7"><a href="#cb13-7"></a>    name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb13-8"><a href="#cb13-8"></a>    members <span class="op">=</span> ma.fields.List(ma.fields.Nested(MemberSchema))</span>
-<span id="cb13-9"><a href="#cb13-9"></a></span>
-<span id="cb13-10"><a href="#cb13-10"></a>team <span class="op">=</span> Team.get_one(name<span class="op">=</span><span class="st">&quot;Ghostbusters&quot;</span>)</span>
-<span id="cb13-11"><a href="#cb13-11"></a></span>
-<span id="cb13-12"><a href="#cb13-12"></a>TeamSchema().dumps(team)</span>
-<span id="cb13-13"><a href="#cb13-13"></a><span class="co"># {&#39;name&#39;: &#39;Ghostbusters&#39;,</span></span>
-<span id="cb13-14"><a href="#cb13-14"></a><span class="co">#  &#39;members&#39;: [</span></span>
-<span id="cb13-15"><a href="#cb13-15"></a><span class="co">#   {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;, &#39;birthdate&#39;: &#39;1958-10-02T00:00:00&#39;},</span></span>
-<span id="cb13-16"><a href="#cb13-16"></a><span class="co">#   {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;, &#39;birthdate&#39;: &#39;1960-09-06T00:00:00&#39;}</span></span>
-<span id="cb13-17"><a href="#cb13-17"></a><span class="co"># ]}</span></span></code></pre></div>
-</section><section id="pré-post-traitements" class="slide level2">
-<h2>Pré-post traitements</h2>
-<p><code>pre_load</code> / <code>post_load</code> / <code>pre_dump</code> / <code>post_dump</code></p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb14-2"><a href="#cb14-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb14-3"><a href="#cb14-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
-<span id="cb14-4"><a href="#cb14-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
-<span id="cb14-5"><a href="#cb14-5"></a></span>
-<span id="cb14-6"><a href="#cb14-6"></a>    <span class="at">@ma.post_load</span></span>
-<span id="cb14-7"><a href="#cb14-7"></a>    <span class="kw">def</span> make_instance(<span class="va">self</span>, data, <span class="op">**</span>kwargs):</span>
-<span id="cb14-8"><a href="#cb14-8"></a>        <span class="cf">return</span> Member(<span class="op">**</span>data)</span>
-<span id="cb14-9"><a href="#cb14-9"></a></span>
-<span id="cb14-10"><a href="#cb14-10"></a>    member <span class="op">=</span> MemberSchema().load(</span>
-<span id="cb14-11"><a href="#cb14-11"></a>        {<span class="st">&quot;first_name&quot;</span>: <span class="st">&quot;Peter&quot;</span>, <span class="st">&quot;last_name&quot;</span>: <span class="st">&quot;Venkman&quot;</span>, <span class="st">&quot;birthdate&quot;</span>: dt.datetime(<span class="dv">1960</span>, <span class="dv">9</span>, <span class="dv">6</span>)}</span>
-<span id="cb14-12"><a href="#cb14-12"></a>    )</span>
-<span id="cb14-13"><a href="#cb14-13"></a>    member.first_name</span>
-<span id="cb14-14"><a href="#cb14-14"></a>    <span class="co"># &#39;Peter&#39;</span></span></code></pre></div>
-</section><section id="validation-1" class="slide level2">
-<h2>Validation (1)</h2>
+<span id="cb11-6"><a href="#cb11-6"></a>schema <span class="op">=</span> TeamSchema()</span>
+<span id="cb11-7"><a href="#cb11-7"></a></span>
+<span id="cb11-8"><a href="#cb11-8"></a>schema.dump(team)</span>
+<span id="cb11-9"><a href="#cb11-9"></a><span class="co"># {&#39;name&#39;: &#39;Ghostbusters&#39;, &#39;creation_date&#39;: &#39;1983-01-23T00:00:00&#39;}</span></span></code></pre></div>
+</section><section id="validation" class="slide level2">
+<h2>Validation</h2>
 <p>Validation à la désérialisation</p>
 <ul>
 <li>Champs obligatoires</li>
 <li>Validation des valeurs</li>
+<li>Structuration des messages d’erreur</li>
 </ul>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
+<span id="cb12-2"><a href="#cb12-2"></a>    first_name <span class="op">=</span> ma.fields.String(validate<span class="op">=</span>ma.validate.Length(<span class="bu">min</span><span class="op">=</span><span class="dv">2</span>, <span class="bu">max</span><span class="op">=</span><span class="dv">50</span>))</span>
+<span id="cb12-3"><a href="#cb12-3"></a>    last_name <span class="op">=</span> ma.fields.String(required<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-4"><a href="#cb12-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
+<span id="cb12-5"><a href="#cb12-5"></a></span>
+<span id="cb12-6"><a href="#cb12-6"></a>MemberSchema().load({<span class="st">&quot;first_name&quot;</span>: <span class="st">&quot;V&quot;</span>})</span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co"># marshmallow.exceptions.ValidationError: {</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">#     &#39;last_name&#39;: [&#39;Missing data for required field.&#39;],</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="co">#     &#39;first_name&#39;: [&#39;Length must be between 2 and 50.&#39;]</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a><span class="co"># }</span></span></code></pre></div>
+</section><section id="read-only-write-only" class="slide level2">
+<h2>Read-only, Write-only</h2>
+<div class="sourceCode" id="cb13"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
+<span id="cb13-2"><a href="#cb13-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb13-3"><a href="#cb13-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb13-4"><a href="#cb13-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
+<span id="cb13-5"><a href="#cb13-5"></a>    age <span class="op">=</span> ma.fields.Int(dump_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-6"><a href="#cb13-6"></a>    password <span class="op">=</span> ma.fields.Str(load_only<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb13-7"><a href="#cb13-7"></a></span>
+<span id="cb13-8"><a href="#cb13-8"></a>member <span class="op">=</span> Member.get_one(last_name<span class="op">=</span><span class="st">&#39;Venkman&#39;</span>)</span>
+<span id="cb13-9"><a href="#cb13-9"></a></span>
+<span id="cb13-10"><a href="#cb13-10"></a>MemberSchema().dump(member)</span>
+<span id="cb13-11"><a href="#cb13-11"></a><span class="co"># {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;, &#39;birthdate&#39;: &#39;1960-09-06T00:00:00&#39;, &#39;age&#39;: 59}</span></span></code></pre></div>
+</section><section id="découplage-des-noms-de-champs-entre-modèle-et-api" class="slide level2">
+<h2>Découplage des noms de champs entre modèle et API</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
+<span id="cb14-2"><a href="#cb14-2"></a>    first_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;firstName&quot;</span>)</span>
+<span id="cb14-3"><a href="#cb14-3"></a>    last_name <span class="op">=</span> ma.fields.String(data_key<span class="op">=</span><span class="st">&quot;lastName&quot;</span>)</span>
+<span id="cb14-4"><a href="#cb14-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime(data_key<span class="op">=</span><span class="st">&quot;birth-date&quot;</span>)</span>
+<span id="cb14-5"><a href="#cb14-5"></a></span>
+<span id="cb14-6"><a href="#cb14-6"></a>MemberSchema().dump(member)</span>
+<span id="cb14-7"><a href="#cb14-7"></a><span class="co"># {&#39;firstName&#39;: &#39;Peter&#39;, &#39;lastName&#39;: &#39;Venkman&#39;, &#39;birth-date&#39;: &#39;1960-09-06T00:00:00&#39;}</span></span></code></pre></div>
+</section><section id="collections" class="slide level2">
+<h2>Collections</h2>
 <div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
-<span id="cb15-2"><a href="#cb15-2"></a>    first_name <span class="op">=</span> ma.fields.String(validate<span class="op">=</span>ma.validate.Length(<span class="bu">min</span><span class="op">=</span><span class="dv">2</span>, <span class="bu">max</span><span class="op">=</span><span class="dv">50</span>))</span>
-<span id="cb15-3"><a href="#cb15-3"></a>    last_name <span class="op">=</span> ma.fields.String(required<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb15-4"><a href="#cb15-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span></code></pre></div>
-</section><section id="validation-2" class="slide level2">
-<h2>Validation (2)</h2>
-<p>Structuration des messages d’erreur</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a>MemberSchema().load({<span class="st">&quot;first_name&quot;</span>: <span class="st">&quot;V&quot;</span>})</span>
-<span id="cb16-2"><a href="#cb16-2"></a><span class="co"># marshmallow.exceptions.ValidationError: {</span></span>
-<span id="cb16-3"><a href="#cb16-3"></a><span class="co">#     &#39;last_name&#39;: [&#39;Missing data for required field.&#39;],</span></span>
-<span id="cb16-4"><a href="#cb16-4"></a><span class="co">#     &#39;first_name&#39;: [&#39;Length must be between 2 and 50.&#39;]</span></span>
-<span id="cb16-5"><a href="#cb16-5"></a><span class="co"># }</span></span></code></pre></div>
-</section><section id="questions" class="slide level2">
-<h2>Questions</h2>
+<span id="cb15-2"><a href="#cb15-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb15-3"><a href="#cb15-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb15-4"><a href="#cb15-4"></a></span>
+<span id="cb15-5"><a href="#cb15-5"></a>members <span class="op">=</span> Member.get_all()</span>
+<span id="cb15-6"><a href="#cb15-6"></a></span>
+<span id="cb15-7"><a href="#cb15-7"></a>schema <span class="op">=</span> MemberSchema(many<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb15-8"><a href="#cb15-8"></a></span>
+<span id="cb15-9"><a href="#cb15-9"></a>schema.dump(members)</span>
+<span id="cb15-10"><a href="#cb15-10"></a><span class="co"># [</span></span>
+<span id="cb15-11"><a href="#cb15-11"></a><span class="co">#     {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;,},</span></span>
+<span id="cb15-12"><a href="#cb15-12"></a><span class="co">#     {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;,},</span></span>
+<span id="cb15-13"><a href="#cb15-13"></a><span class="co"># ]</span></span></code></pre></div>
+</section><section id="schémas-imbriqués" class="slide level2">
+<h2>Schémas imbriqués</h2>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
+<span id="cb16-2"><a href="#cb16-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb16-3"><a href="#cb16-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb16-4"><a href="#cb16-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
+<span id="cb16-5"><a href="#cb16-5"></a></span>
+<span id="cb16-6"><a href="#cb16-6"></a><span class="kw">class</span> TeamSchema(ma.Schema):</span>
+<span id="cb16-7"><a href="#cb16-7"></a>    name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb16-8"><a href="#cb16-8"></a>    members <span class="op">=</span> ma.fields.List(ma.fields.Nested(MemberSchema))</span>
+<span id="cb16-9"><a href="#cb16-9"></a></span>
+<span id="cb16-10"><a href="#cb16-10"></a>team <span class="op">=</span> Team.get_one(name<span class="op">=</span><span class="st">&quot;Ghostbusters&quot;</span>)</span>
+<span id="cb16-11"><a href="#cb16-11"></a></span>
+<span id="cb16-12"><a href="#cb16-12"></a>TeamSchema().dumps(team)</span>
+<span id="cb16-13"><a href="#cb16-13"></a><span class="co"># {&#39;name&#39;: &#39;Ghostbusters&#39;,</span></span>
+<span id="cb16-14"><a href="#cb16-14"></a><span class="co">#  &#39;members&#39;: [</span></span>
+<span id="cb16-15"><a href="#cb16-15"></a><span class="co">#   {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;, &#39;birthdate&#39;: &#39;1958-10-02T00:00:00&#39;},</span></span>
+<span id="cb16-16"><a href="#cb16-16"></a><span class="co">#   {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;, &#39;birthdate&#39;: &#39;1960-09-06T00:00:00&#39;}</span></span>
+<span id="cb16-17"><a href="#cb16-17"></a><span class="co"># ]}</span></span></code></pre></div>
+</section><section id="pré-post-traitements" class="slide level2">
+<h2>Pré-post traitements</h2>
+<p><code>pre_load</code> / <code>post_load</code> / <code>pre_dump</code> / <code>post_dump</code></p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">class</span> MemberSchema(ma.Schema):</span>
+<span id="cb17-2"><a href="#cb17-2"></a>    first_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb17-3"><a href="#cb17-3"></a>    last_name <span class="op">=</span> ma.fields.String()</span>
+<span id="cb17-4"><a href="#cb17-4"></a>    birthdate <span class="op">=</span> ma.fields.DateTime()</span>
+<span id="cb17-5"><a href="#cb17-5"></a></span>
+<span id="cb17-6"><a href="#cb17-6"></a>    <span class="at">@ma.post_load</span></span>
+<span id="cb17-7"><a href="#cb17-7"></a>    <span class="kw">def</span> make_instance(<span class="va">self</span>, data, <span class="op">**</span>kwargs):</span>
+<span id="cb17-8"><a href="#cb17-8"></a>        <span class="cf">return</span> Member(<span class="op">**</span>data)</span>
+<span id="cb17-9"><a href="#cb17-9"></a></span>
+<span id="cb17-10"><a href="#cb17-10"></a>    member <span class="op">=</span> MemberSchema().load(</span>
+<span id="cb17-11"><a href="#cb17-11"></a>        {<span class="st">&quot;first_name&quot;</span>: <span class="st">&quot;Peter&quot;</span>, <span class="st">&quot;last_name&quot;</span>: <span class="st">&quot;Venkman&quot;</span>, <span class="st">&quot;birthdate&quot;</span>: dt.datetime(<span class="dv">1960</span>, <span class="dv">9</span>, <span class="dv">6</span>)}</span>
+<span id="cb17-12"><a href="#cb17-12"></a>    )</span>
+<span id="cb17-13"><a href="#cb17-13"></a>    member.first_name</span>
+<span id="cb17-14"><a href="#cb17-14"></a>    <span class="co"># &#39;Peter&#39;</span></span></code></pre></div>
 </section></section>
 <section><section id="intégration-orm-odm" class="title-slide slide level1"><h1>Intégration ORM / ODM</h1></section><section id="orm-odm" class="slide level2">
 <h2>ORM / ODM</h2>
@@ -388,7 +417,7 @@ De la sérialization<br />
 <li><p>ORM : <em>Object-Relation Mapping</em></p></li>
 <li><p>ODM : <em>Object-Document Mapping</em></p></li>
 <li><p>Couche d’abstraction entre objets et base de donnée</p></li>
-<li><p>Définit le modèle avec des schémas</p></li>
+<li><p>Définit le modèle avec des schémas et des champs</p></li>
 </ul>
 </section><section id="intégration-ormodm---marshmallow" class="slide level2">
 <h2>Intégration ORM/ODM - marshmallow</h2>
@@ -411,151 +440,155 @@ De la sérialization<br />
 <li>peewee → marshmallow-peewee</li>
 <li>MongoEngine → marshmallow-mongoengine</li>
 </ul>
-</section><section id="marshmallow-mongoengine" class="slide level2">
-<h2>marshmallow-mongoengine</h2>
+</section><section id="marshmallow-mongoengine-1" class="slide level2">
+<h2>marshmallow-mongoengine (1)</h2>
 <h3 id="modèle">Modèle</h3>
-<div class="sourceCode" id="cb18"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1"></a><span class="im">import</span> mongoengine <span class="im">as</span> me</span>
-<span id="cb18-2"><a href="#cb18-2"></a></span>
-<span id="cb18-3"><a href="#cb18-3"></a><span class="kw">class</span> Team(me.Document):</span>
-<span id="cb18-4"><a href="#cb18-4"></a>    name <span class="op">=</span> me.StringField(max_length<span class="op">=</span><span class="dv">40</span>)</span>
-<span id="cb18-5"><a href="#cb18-5"></a>    members <span class="op">=</span> me.ListField(me.ReferenceField(<span class="st">&quot;Member&quot;</span>))</span>
-<span id="cb18-6"><a href="#cb18-6"></a></span>
-<span id="cb18-7"><a href="#cb18-7"></a><span class="kw">class</span> Member(me.Document):</span>
-<span id="cb18-8"><a href="#cb18-8"></a>    first_name <span class="op">=</span> me.StringField()</span>
-<span id="cb18-9"><a href="#cb18-9"></a>    last_name <span class="op">=</span> me.StringField()</span>
-<span id="cb18-10"><a href="#cb18-10"></a>    birthdate <span class="op">=</span> me.DateTimeField()</span></code></pre></div>
-</section><section class="slide level2">
-
-<h3 id="schémas">Schémas</h3>
-<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="im">from</span> marshmallow_mongoengine <span class="im">import</span> ModelSchema</span>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1"></a><span class="im">import</span> mongoengine <span class="im">as</span> me</span>
 <span id="cb19-2"><a href="#cb19-2"></a></span>
-<span id="cb19-3"><a href="#cb19-3"></a><span class="kw">class</span> TeamSchema(ModelSchema):</span>
-<span id="cb19-4"><a href="#cb19-4"></a>    <span class="kw">class</span> Meta:</span>
-<span id="cb19-5"><a href="#cb19-5"></a>        model <span class="op">=</span> Team</span>
+<span id="cb19-3"><a href="#cb19-3"></a><span class="kw">class</span> Team(me.Document):</span>
+<span id="cb19-4"><a href="#cb19-4"></a>    name <span class="op">=</span> me.StringField(max_length<span class="op">=</span><span class="dv">40</span>)</span>
+<span id="cb19-5"><a href="#cb19-5"></a>    members <span class="op">=</span> me.ListField(me.ReferenceField(<span class="st">&quot;Member&quot;</span>))</span>
 <span id="cb19-6"><a href="#cb19-6"></a></span>
-<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">class</span> MemberSchema(ModelSchema):</span>
-<span id="cb19-8"><a href="#cb19-8"></a>    <span class="kw">class</span> Meta:</span>
-<span id="cb19-9"><a href="#cb19-9"></a>        model <span class="op">=</span> Member</span>
-<span id="cb19-10"><a href="#cb19-10"></a></span>
-<span id="cb19-11"><a href="#cb19-11"></a>team <span class="op">=</span> Team.objects.get(name<span class="op">=</span><span class="st">&quot;Ghostbusters&quot;</span>)</span>
-<span id="cb19-12"><a href="#cb19-12"></a></span>
-<span id="cb19-13"><a href="#cb19-13"></a>TeamSchema().dump(team)</span>
-<span id="cb19-14"><a href="#cb19-14"></a><span class="co"># {&#39;id&#39;: 1,</span></span>
-<span id="cb19-15"><a href="#cb19-15"></a><span class="co">#   &#39;name&#39;: &#39;Ghostbusters&#39;,</span></span>
-<span id="cb19-16"><a href="#cb19-16"></a><span class="co">#  &#39;members&#39;: [</span></span>
-<span id="cb19-17"><a href="#cb19-17"></a><span class="co">#   {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;, &#39;birthdate&#39;: &#39;1958-10-02T00:00:00&#39;},</span></span>
-<span id="cb19-18"><a href="#cb19-18"></a><span class="co">#   {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;, &#39;birthdate&#39;: &#39;1960-09-06T00:00:00&#39;}</span></span>
-<span id="cb19-19"><a href="#cb19-19"></a><span class="co"># ]}</span></span>
-<span id="cb19-20"><a href="#cb19-20"></a></span>
-<span id="cb19-21"><a href="#cb19-21"></a>TeamSchema().load({<span class="st">&quot;name&quot;</span>: <span class="st">&quot;This name is too long to pass validation.&quot;</span>})</span>
-<span id="cb19-22"><a href="#cb19-22"></a><span class="co"># marshmallow.exceptions.ValidationError: {&#39;name&#39;: [&#39;Longer than maximum length 40.&#39;]}</span></span></code></pre></div>
+<span id="cb19-7"><a href="#cb19-7"></a><span class="kw">class</span> Member(me.Document):</span>
+<span id="cb19-8"><a href="#cb19-8"></a>    first_name <span class="op">=</span> me.StringField()</span>
+<span id="cb19-9"><a href="#cb19-9"></a>    last_name <span class="op">=</span> me.StringField()</span>
+<span id="cb19-10"><a href="#cb19-10"></a>    birthdate <span class="op">=</span> me.DateTimeField()</span></code></pre></div>
+</section><section id="marshmallow-mongoengine-2" class="slide level2">
+<h2>marshmallow-mongoengine (2)</h2>
+<h3 id="schémas">Schémas</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="im">from</span> marshmallow_mongoengine <span class="im">import</span> ModelSchema</span>
+<span id="cb20-2"><a href="#cb20-2"></a></span>
+<span id="cb20-3"><a href="#cb20-3"></a><span class="kw">class</span> TeamSchema(ModelSchema):</span>
+<span id="cb20-4"><a href="#cb20-4"></a>    <span class="kw">class</span> Meta:</span>
+<span id="cb20-5"><a href="#cb20-5"></a>        model <span class="op">=</span> Team</span>
+<span id="cb20-6"><a href="#cb20-6"></a></span>
+<span id="cb20-7"><a href="#cb20-7"></a><span class="kw">class</span> MemberSchema(ModelSchema):</span>
+<span id="cb20-8"><a href="#cb20-8"></a>    <span class="kw">class</span> Meta:</span>
+<span id="cb20-9"><a href="#cb20-9"></a>        model <span class="op">=</span> Member</span>
+<span id="cb20-10"><a href="#cb20-10"></a></span>
+<span id="cb20-11"><a href="#cb20-11"></a>team <span class="op">=</span> Team.objects.get(name<span class="op">=</span><span class="st">&quot;Ghostbusters&quot;</span>)</span>
+<span id="cb20-12"><a href="#cb20-12"></a></span>
+<span id="cb20-13"><a href="#cb20-13"></a>TeamSchema().dump(team)</span>
+<span id="cb20-14"><a href="#cb20-14"></a><span class="co"># {&#39;id&#39;: 1,</span></span>
+<span id="cb20-15"><a href="#cb20-15"></a><span class="co">#   &#39;name&#39;: &#39;Ghostbusters&#39;,</span></span>
+<span id="cb20-16"><a href="#cb20-16"></a><span class="co">#  &#39;members&#39;: [</span></span>
+<span id="cb20-17"><a href="#cb20-17"></a><span class="co">#   {&#39;first_name&#39;: &#39;Egon&#39;, &#39;last_name&#39;: &#39;Spengler&#39;, &#39;birthdate&#39;: &#39;1958-10-02T00:00:00&#39;},</span></span>
+<span id="cb20-18"><a href="#cb20-18"></a><span class="co">#   {&#39;first_name&#39;: &#39;Peter&#39;, &#39;last_name&#39;: &#39;Venkman&#39;, &#39;birthdate&#39;: &#39;1960-09-06T00:00:00&#39;}</span></span>
+<span id="cb20-19"><a href="#cb20-19"></a><span class="co"># ]}</span></span>
+<span id="cb20-20"><a href="#cb20-20"></a></span>
+<span id="cb20-21"><a href="#cb20-21"></a>TeamSchema().load({<span class="st">&quot;name&quot;</span>: <span class="st">&quot;This name is too long to pass validation.&quot;</span>})</span>
+<span id="cb20-22"><a href="#cb20-22"></a><span class="co"># marshmallow.exceptions.ValidationError: {&#39;name&#39;: [&#39;Longer than maximum length 40.&#39;]}</span></span></code></pre></div>
 </section><section id="umongo-odm-mongodb" class="slide level2">
 <h2>umongo : ODM MongoDB</h2>
 <ul>
-<li>Alternative à MongoEngine + marshmallow-mongoengine</li>
+<li>Alternative à { MongoEngine + marshmallow-mongoengine }
+<ul>
 <li>Utilise marshmallow pour sérialization/désérialisation MongoDB BSON</li>
 <li>Génère schemas marshmallow pour API</li>
+</ul></li>
 <li>Fonctionne avec PyMongo, TxMongo, Motor</li>
 </ul>
 </section></section>
 <section><section id="webargs" class="title-slide slide level1"><h1>webargs</h1></section><section id="webargs-désérialisation-de-requêtes" class="slide level2">
 <h2>webargs : désérialisation de requêtes</h2>
 <p>Désérialise et valide les requêtes HTTP</p>
-<p>Prend en charge nativement les principaux serveurs web :</p>
-<p>Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, aiohttp</p>
+<p>Injecte le contenu de la requête dans la fonction de vue</p>
 </section><section id="sans-webargs" class="slide level2">
 <h2>Sans webargs</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask, request</span>
-<span id="cb20-2"><a href="#cb20-2"></a></span>
-<span id="cb20-3"><a href="#cb20-3"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
-<span id="cb20-4"><a href="#cb20-4"></a></span>
-<span id="cb20-5"><a href="#cb20-5"></a>team <span class="op">=</span> TeamSchema()</span>
-<span id="cb20-6"><a href="#cb20-6"></a></span>
-<span id="cb20-7"><a href="#cb20-7"></a><span class="at">@app.route</span>(<span class="st">&quot;/teams/&quot;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
-<span id="cb20-8"><a href="#cb20-8"></a><span class="kw">def</span> post():</span>
-<span id="cb20-9"><a href="#cb20-9"></a>    <span class="co"># Désérialisation et validation</span></span>
-<span id="cb20-10"><a href="#cb20-10"></a>    <span class="cf">try</span>:</span>
-<span id="cb20-11"><a href="#cb20-11"></a>        team_data <span class="op">=</span> team_schema.load(request.json)</span>
-<span id="cb20-12"><a href="#cb20-12"></a>    <span class="cf">except</span> ValidationError <span class="im">as</span> exc:</span>
-<span id="cb20-13"><a href="#cb20-13"></a>        abort(<span class="dv">422</span>)</span>
-<span id="cb20-14"><a href="#cb20-14"></a>    <span class="co"># Traitement</span></span>
-<span id="cb20-15"><a href="#cb20-15"></a>    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</span>
-<span id="cb20-16"><a href="#cb20-16"></a>    team.save()</span>
-<span id="cb20-17"><a href="#cb20-17"></a>    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask, request</span>
+<span id="cb21-2"><a href="#cb21-2"></a></span>
+<span id="cb21-3"><a href="#cb21-3"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
+<span id="cb21-4"><a href="#cb21-4"></a></span>
+<span id="cb21-5"><a href="#cb21-5"></a>team_schema <span class="op">=</span> TeamSchema()</span>
+<span id="cb21-6"><a href="#cb21-6"></a></span>
+<span id="cb21-7"><a href="#cb21-7"></a><span class="at">@app.route</span>(<span class="st">&quot;/teams/&quot;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb21-8"><a href="#cb21-8"></a><span class="kw">def</span> post():</span>
+<span id="cb21-9"><a href="#cb21-9"></a>    <span class="co"># Désérialisation et validation</span></span>
+<span id="cb21-10"><a href="#cb21-10"></a>    <span class="cf">try</span>:</span>
+<span id="cb21-11"><a href="#cb21-11"></a>        team_data <span class="op">=</span> team_schema.load(request.json)</span>
+<span id="cb21-12"><a href="#cb21-12"></a>    <span class="cf">except</span> ValidationError <span class="im">as</span> exc:</span>
+<span id="cb21-13"><a href="#cb21-13"></a>        abort(<span class="dv">422</span>)</span>
+<span id="cb21-14"><a href="#cb21-14"></a>    <span class="co"># Traitement</span></span>
+<span id="cb21-15"><a href="#cb21-15"></a>    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</span>
+<span id="cb21-16"><a href="#cb21-16"></a>    team.save()</span>
+<span id="cb21-17"><a href="#cb21-17"></a>    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></span></code></pre></div>
 </section><section id="avec-webargs-1" class="slide level2">
 <h2>Avec webargs (1)</h2>
-<div class="sourceCode" id="cb21"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask</span>
-<span id="cb21-2"><a href="#cb21-2"></a><span class="im">from</span> webargs.flaskparser <span class="im">import</span> use_args</span>
-<span id="cb21-3"><a href="#cb21-3"></a></span>
-<span id="cb21-4"><a href="#cb21-4"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
-<span id="cb21-5"><a href="#cb21-5"></a></span>
-<span id="cb21-6"><a href="#cb21-6"></a><span class="at">@app.route</span>(<span class="st">&quot;/&quot;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
-<span id="cb21-7"><a href="#cb21-7"></a><span class="at">@use_args</span>(TeamSchema, location<span class="op">=</span><span class="st">&quot;json&quot;</span>)</span>
-<span id="cb21-8"><a href="#cb21-8"></a><span class="kw">def</span> post(team_data):</span>
-<span id="cb21-9"><a href="#cb21-9"></a>    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</span>
-<span id="cb21-10"><a href="#cb21-10"></a>    team.save()</span>
-<span id="cb21-11"><a href="#cb21-11"></a>    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask</span>
+<span id="cb22-2"><a href="#cb22-2"></a><span class="im">from</span> webargs.flaskparser <span class="im">import</span> use_args</span>
+<span id="cb22-3"><a href="#cb22-3"></a></span>
+<span id="cb22-4"><a href="#cb22-4"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
+<span id="cb22-5"><a href="#cb22-5"></a></span>
+<span id="cb22-6"><a href="#cb22-6"></a><span class="at">@app.route</span>(<span class="st">&quot;/&quot;</span>, methods<span class="op">=</span>[<span class="st">&#39;POST&#39;</span>])</span>
+<span id="cb22-7"><a href="#cb22-7"></a><span class="at">@use_args</span>(TeamSchema, location<span class="op">=</span><span class="st">&quot;json&quot;</span>)</span>
+<span id="cb22-8"><a href="#cb22-8"></a><span class="kw">def</span> post(team_data):</span>
+<span id="cb22-9"><a href="#cb22-9"></a>    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</span>
+<span id="cb22-10"><a href="#cb22-10"></a>    team.save()</span>
+<span id="cb22-11"><a href="#cb22-11"></a>    <span class="cf">return</span> team_schema.dump(team), <span class="dv">201</span></span></code></pre></div>
 </section><section id="avec-webargs-2" class="slide level2">
 <h2>Avec webargs (2)</h2>
 <p>Inclure les erreurs de validation dans la réponse</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1"></a><span class="im">from</span> flask <span class="im">import</span> jsonify</span>
-<span id="cb22-2"><a href="#cb22-2"></a></span>
-<span id="cb22-3"><a href="#cb22-3"></a><span class="co"># Return validation errors as JSON</span></span>
-<span id="cb22-4"><a href="#cb22-4"></a><span class="at">@app.errorhandler</span>(<span class="dv">422</span>)</span>
-<span id="cb22-5"><a href="#cb22-5"></a><span class="kw">def</span> handle_error(err):</span>
-<span id="cb22-6"><a href="#cb22-6"></a>    messages <span class="op">=</span> err.data.get(<span class="st">&quot;messages&quot;</span>, [<span class="st">&quot;Invalid request.&quot;</span>])</span>
-<span id="cb22-7"><a href="#cb22-7"></a>    <span class="cf">return</span> jsonify({<span class="st">&quot;errors&quot;</span>: messages}), err.code</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="im">from</span> flask <span class="im">import</span> jsonify</span>
+<span id="cb23-2"><a href="#cb23-2"></a></span>
+<span id="cb23-3"><a href="#cb23-3"></a><span class="co"># Return validation errors as JSON</span></span>
+<span id="cb23-4"><a href="#cb23-4"></a><span class="at">@app.errorhandler</span>(<span class="dv">422</span>)</span>
+<span id="cb23-5"><a href="#cb23-5"></a><span class="kw">def</span> handle_error(err):</span>
+<span id="cb23-6"><a href="#cb23-6"></a>    messages <span class="op">=</span> err.data.get(<span class="st">&quot;messages&quot;</span>, [<span class="st">&quot;Invalid request.&quot;</span>])</span>
+<span id="cb23-7"><a href="#cb23-7"></a>    <span class="cf">return</span> jsonify({<span class="st">&quot;errors&quot;</span>: messages}), err.code</span></code></pre></div>
+</section><section id="compatibilité" class="slide level2">
+<h2>Compatibilité</h2>
+<p>Prend en charge nativement les principaux serveurs web :</p>
+<p>Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, aiohttp</p>
 </section></section>
 <section><section id="apispec" class="title-slide slide level1"><h1>apispec</h1></section><section id="apispec-documentation-openapi-swagger" class="slide level2">
 <h2>apispec : Documentation OpenAPI (Swagger)</h2>
 <p>Génération de la documentation OpenAPI</p>
 <p>Introspection des schémas marshmallow</p>
-<p>Prise en charge de flask, bottle, tornado via apispec-webframeworks</p>
 <p><img data-src="assets/openapi-logo.png" /></p>
-</section><section id="webargs-apispec-exemple" class="slide level2">
-<h2>webargs + apispec : exemple</h2>
-<div class="sourceCode" id="cb23"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask, request</span>
-<span id="cb23-2"><a href="#cb23-2"></a><span class="im">from</span> marshmallow <span class="im">import</span> Schema, fields</span>
-<span id="cb23-3"><a href="#cb23-3"></a><span class="im">from</span> webargs.flaskparser <span class="im">import</span> use_args</span>
-<span id="cb23-4"><a href="#cb23-4"></a><span class="im">from</span> apispec <span class="im">import</span> APISpec</span>
-<span id="cb23-5"><a href="#cb23-5"></a><span class="im">from</span> apispec.ext.marshmallow <span class="im">import</span> MarshmallowPlugin</span>
-<span id="cb23-6"><a href="#cb23-6"></a><span class="im">from</span> apispec_webframeworks.flask <span class="im">import</span> FlaskPlugin</span>
-<span id="cb23-7"><a href="#cb23-7"></a></span>
-<span id="cb23-8"><a href="#cb23-8"></a>spec <span class="op">=</span> APISpec(</span>
-<span id="cb23-9"><a href="#cb23-9"></a>    title<span class="op">=</span><span class="st">&quot;Team manager&quot;</span>,</span>
-<span id="cb23-10"><a href="#cb23-10"></a>    version<span class="op">=</span><span class="st">&quot;1.0.0&quot;</span>,</span>
-<span id="cb23-11"><a href="#cb23-11"></a>    openapi_version<span class="op">=</span><span class="st">&quot;3.0.2&quot;</span>,</span>
-<span id="cb23-12"><a href="#cb23-12"></a>    plugins<span class="op">=</span>[FlaskPlugin(), MarshmallowPlugin()],</span>
-<span id="cb23-13"><a href="#cb23-13"></a>)</span>
-<span id="cb23-14"><a href="#cb23-14"></a></span>
-<span id="cb23-15"><a href="#cb23-15"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
-<span id="cb23-16"><a href="#cb23-16"></a>spec.init_app(app)</span></code></pre></div>
-</section><section class="slide level2">
-
-<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="at">@app.route</span>(<span class="st">&quot;/teams/&quot;</span>, methods<span class="op">=</span>[<span class="st">&quot;POST&quot;</span>])</span>
-<span id="cb24-2"><a href="#cb24-2"></a><span class="at">@use_args</span>(TeamSchema, location<span class="op">=</span><span class="st">&quot;json&quot;</span>)</span>
-<span id="cb24-3"><a href="#cb24-3"></a><span class="kw">def</span> post_team():</span>
-<span id="cb24-4"><a href="#cb24-4"></a>    <span class="co">&quot;&quot;&quot;Post team</span></span>
-<span id="cb24-5"><a href="#cb24-5"></a><span class="co">    ---</span></span>
-<span id="cb24-6"><a href="#cb24-6"></a><span class="co">    post:</span></span>
-<span id="cb24-7"><a href="#cb24-7"></a><span class="co">      description: Add a new team.</span></span>
-<span id="cb24-8"><a href="#cb24-8"></a><span class="co">      requestBody:</span></span>
-<span id="cb24-9"><a href="#cb24-9"></a><span class="co">        description: Team</span></span>
-<span id="cb24-10"><a href="#cb24-10"></a><span class="co">        required: true</span></span>
-<span id="cb24-11"><a href="#cb24-11"></a><span class="co">        content:</span></span>
-<span id="cb24-12"><a href="#cb24-12"></a><span class="co">          application/json:</span></span>
-<span id="cb24-13"><a href="#cb24-13"></a><span class="co">            schema: TeamSchema</span></span>
-<span id="cb24-14"><a href="#cb24-14"></a><span class="co">      responses:</span></span>
-<span id="cb24-15"><a href="#cb24-15"></a><span class="co">        200:</span></span>
-<span id="cb24-16"><a href="#cb24-16"></a><span class="co">          content:</span></span>
-<span id="cb24-17"><a href="#cb24-17"></a><span class="co">            application/json:</span></span>
-<span id="cb24-18"><a href="#cb24-18"></a><span class="co">              schema: TeamSchema</span></span>
-<span id="cb24-19"><a href="#cb24-19"></a><span class="co">    &quot;&quot;&quot;</span></span>
-<span id="cb24-20"><a href="#cb24-20"></a>    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</span>
-<span id="cb24-21"><a href="#cb24-21"></a>    team.save()</span>
-<span id="cb24-22"><a href="#cb24-22"></a>    <span class="cf">return</span> TeamSchema().dump(team), <span class="dv">201</span></span>
-<span id="cb24-23"><a href="#cb24-23"></a></span>
-<span id="cb24-24"><a href="#cb24-24"></a>spec.path(view<span class="op">=</span>post_team)</span></code></pre></div>
+</section><section id="webargs-apispec-exemple-1" class="slide level2">
+<h2>webargs + apispec : exemple (1)</h2>
+<div class="sourceCode" id="cb24"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1"></a><span class="im">from</span> flask <span class="im">import</span> Flask, request</span>
+<span id="cb24-2"><a href="#cb24-2"></a><span class="im">from</span> marshmallow <span class="im">import</span> Schema, fields</span>
+<span id="cb24-3"><a href="#cb24-3"></a><span class="im">from</span> webargs.flaskparser <span class="im">import</span> use_args</span>
+<span id="cb24-4"><a href="#cb24-4"></a><span class="im">from</span> apispec <span class="im">import</span> APISpec</span>
+<span id="cb24-5"><a href="#cb24-5"></a><span class="im">from</span> apispec.ext.marshmallow <span class="im">import</span> MarshmallowPlugin</span>
+<span id="cb24-6"><a href="#cb24-6"></a><span class="im">from</span> apispec_webframeworks.flask <span class="im">import</span> FlaskPlugin</span>
+<span id="cb24-7"><a href="#cb24-7"></a></span>
+<span id="cb24-8"><a href="#cb24-8"></a>spec <span class="op">=</span> APISpec(</span>
+<span id="cb24-9"><a href="#cb24-9"></a>    title<span class="op">=</span><span class="st">&quot;Team manager&quot;</span>,</span>
+<span id="cb24-10"><a href="#cb24-10"></a>    version<span class="op">=</span><span class="st">&quot;1.0.0&quot;</span>,</span>
+<span id="cb24-11"><a href="#cb24-11"></a>    openapi_version<span class="op">=</span><span class="st">&quot;3.0.2&quot;</span>,</span>
+<span id="cb24-12"><a href="#cb24-12"></a>    plugins<span class="op">=</span>[FlaskPlugin(), MarshmallowPlugin()],</span>
+<span id="cb24-13"><a href="#cb24-13"></a>)</span>
+<span id="cb24-14"><a href="#cb24-14"></a></span>
+<span id="cb24-15"><a href="#cb24-15"></a>app <span class="op">=</span> Flask(<span class="va">__name__</span>)</span>
+<span id="cb24-16"><a href="#cb24-16"></a>spec.init_app(app)</span></code></pre></div>
+</section><section id="webargs-apispec-exemple-2" class="slide level2">
+<h2>webargs + apispec : exemple (2)</h2>
+<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="at">@app.route</span>(<span class="st">&quot;/teams/&quot;</span>, methods<span class="op">=</span>[<span class="st">&quot;POST&quot;</span>])</span>
+<span id="cb25-2"><a href="#cb25-2"></a><span class="at">@use_args</span>(TeamSchema, location<span class="op">=</span><span class="st">&quot;json&quot;</span>)</span>
+<span id="cb25-3"><a href="#cb25-3"></a><span class="kw">def</span> post_team():</span>
+<span id="cb25-4"><a href="#cb25-4"></a>    <span class="co">&quot;&quot;&quot;Post team</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a><span class="co">    ---</span></span>
+<span id="cb25-6"><a href="#cb25-6"></a><span class="co">    post:</span></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="co">      description: Add a new team.</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a><span class="co">      requestBody:</span></span>
+<span id="cb25-9"><a href="#cb25-9"></a><span class="co">        description: Team</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a><span class="co">        required: true</span></span>
+<span id="cb25-11"><a href="#cb25-11"></a><span class="co">        content:</span></span>
+<span id="cb25-12"><a href="#cb25-12"></a><span class="co">          application/json:</span></span>
+<span id="cb25-13"><a href="#cb25-13"></a><span class="co">            schema: TeamSchema</span></span>
+<span id="cb25-14"><a href="#cb25-14"></a><span class="co">      responses:</span></span>
+<span id="cb25-15"><a href="#cb25-15"></a><span class="co">        200:</span></span>
+<span id="cb25-16"><a href="#cb25-16"></a><span class="co">          content:</span></span>
+<span id="cb25-17"><a href="#cb25-17"></a><span class="co">            application/json:</span></span>
+<span id="cb25-18"><a href="#cb25-18"></a><span class="co">              schema: TeamSchema</span></span>
+<span id="cb25-19"><a href="#cb25-19"></a><span class="co">    &quot;&quot;&quot;</span></span>
+<span id="cb25-20"><a href="#cb25-20"></a>    team <span class="op">=</span> Team(<span class="op">**</span>team_data)</span>
+<span id="cb25-21"><a href="#cb25-21"></a>    team.save()</span>
+<span id="cb25-22"><a href="#cb25-22"></a>    <span class="cf">return</span> TeamSchema().dump(team), <span class="dv">201</span></span>
+<span id="cb25-23"><a href="#cb25-23"></a></span>
+<span id="cb25-24"><a href="#cb25-24"></a>spec.path(view<span class="op">=</span>post_team)</span></code></pre></div>
 </section><section id="webargs-apispec-limitations" class="slide level2">
 <h2>webargs + apispec : limitations</h2>
 <ul>
@@ -563,104 +596,100 @@ De la sérialization<br />
 <li>Sérialisation manuelle</li>
 </ul>
 </section></section>
-<section><section id="flask-smorest" class="title-slide slide level1 dark" data-background-image="assets/smore.gif"><h1>flask-smorest</h1></section><section id="fonctionnalités-1" class="slide level2">
-<h2>Fonctionnalités</h2>
+<section><section id="flask-smorest" class="title-slide slide level1 dark" data-background-image="assets/smore.gif"><h1>flask-smorest</h1></section><section id="présentation" class="slide level2">
+<h2>Présentation</h2>
+<ul>
+<li>Environnement
+<ul>
+<li>marshmallow, webargs, apispec</li>
+<li>Flask</li>
+</ul></li>
+<li>Fonctionnalités
 <ul>
 <li>Sérialisation / désérialisation des entrées / sorties : webargs</li>
 <li>Documentation OpenAPI automatique (ou presque) : apispec</li>
 <li>Pagination</li>
 <li>ETag</li>
+</ul></li>
+<li>Anciennement flask-rest-api</li>
 </ul>
-</section><section id="environnement" class="slide level2">
-<h2>Environnement</h2>
-<ul>
-<li>marshmallow</li>
-<li>Flask</li>
-</ul>
-</section><section id="structuration-dune-ressource" class="slide level2">
-<h2>Structuration d’une ressource</h2>
+</section><section id="structuration-dune-ressource-1" class="slide level2">
+<h2>Structuration d’une ressource (1)</h2>
 <ul>
 <li><code>flask.Blueprint</code> → ressource</li>
 <li><code>flask.MethodView</code> → GET, POST, PUT, DELETE</li>
 </ul>
-</section><section class="slide level2">
-
-<div class="sourceCode" id="cb25"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1"></a><span class="at">@blp.route</span>(<span class="st">&quot;/&quot;</span>)</span>
-<span id="cb25-2"><a href="#cb25-2"></a><span class="kw">class</span> Teams(MethodView):</span>
-<span id="cb25-3"><a href="#cb25-3"></a></span>
-<span id="cb25-4"><a href="#cb25-4"></a>    <span class="at">@blp.arguments</span>(TeamQueryArgsSchema, location<span class="op">=</span><span class="st">&quot;query&quot;</span>)</span>
-<span id="cb25-5"><a href="#cb25-5"></a>    <span class="at">@blp.response</span>(TeamSchema(many<span class="op">=</span><span class="va">True</span>))</span>
-<span id="cb25-6"><a href="#cb25-6"></a>    <span class="kw">def</span> get(<span class="va">self</span>, args):</span>
-<span id="cb25-7"><a href="#cb25-7"></a>        <span class="co">&quot;&quot;&quot;List teams&quot;&quot;&quot;</span></span>
-<span id="cb25-8"><a href="#cb25-8"></a>        <span class="cf">return</span> Team.query.filter_by(<span class="op">**</span>args)</span>
-<span id="cb25-9"><a href="#cb25-9"></a></span>
-<span id="cb25-10"><a href="#cb25-10"></a>    <span class="at">@blp.arguments</span>(TeamSchema)</span>
-<span id="cb25-11"><a href="#cb25-11"></a>    <span class="at">@blp.response</span>(TeamSchema, code<span class="op">=</span><span class="dv">201</span>)</span>
-<span id="cb25-12"><a href="#cb25-12"></a>    <span class="kw">def</span> post(<span class="va">self</span>, new_item):</span>
-<span id="cb25-13"><a href="#cb25-13"></a>        <span class="co">&quot;&quot;&quot;Add a new team&quot;&quot;&quot;</span></span>
-<span id="cb25-14"><a href="#cb25-14"></a>        item <span class="op">=</span> Team(<span class="op">**</span>new_item)</span>
-<span id="cb25-15"><a href="#cb25-15"></a>        db.session.add(item)</span>
-<span id="cb25-16"><a href="#cb25-16"></a>        db.session.commit()</span>
-<span id="cb25-17"><a href="#cb25-17"></a>        <span class="cf">return</span> item</span></code></pre></div>
-</section><section class="slide level2">
-
-<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a></span>
-<span id="cb26-2"><a href="#cb26-2"></a><span class="at">@blp.route</span>(<span class="st">&quot;/&lt;uuid:item_id&gt;&quot;</span>)</span>
-<span id="cb26-3"><a href="#cb26-3"></a><span class="kw">class</span> TeamsById(MethodView):</span>
-<span id="cb26-4"><a href="#cb26-4"></a></span>
-<span id="cb26-5"><a href="#cb26-5"></a>    <span class="at">@blp.response</span>(TeamSchema)</span>
-<span id="cb26-6"><a href="#cb26-6"></a>    <span class="kw">def</span> get(<span class="va">self</span>, item_id):</span>
-<span id="cb26-7"><a href="#cb26-7"></a>        <span class="co">&quot;&quot;&quot;Get team by ID&quot;&quot;&quot;</span></span>
-<span id="cb26-8"><a href="#cb26-8"></a>        <span class="cf">return</span> Team.query.get_or_404(item_id)</span>
+</section><section id="structuration-dune-ressource-2" class="slide level2">
+<h2>Structuration d’une ressource (2)</h2>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1"></a><span class="at">@blp.route</span>(<span class="st">&quot;/&quot;</span>)</span>
+<span id="cb26-2"><a href="#cb26-2"></a><span class="kw">class</span> Teams(MethodView):</span>
+<span id="cb26-3"><a href="#cb26-3"></a></span>
+<span id="cb26-4"><a href="#cb26-4"></a>    <span class="at">@blp.arguments</span>(TeamQueryArgsSchema, location<span class="op">=</span><span class="st">&quot;query&quot;</span>)</span>
+<span id="cb26-5"><a href="#cb26-5"></a>    <span class="at">@blp.response</span>(TeamSchema(many<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb26-6"><a href="#cb26-6"></a>    <span class="kw">def</span> get(<span class="va">self</span>, args):</span>
+<span id="cb26-7"><a href="#cb26-7"></a>        <span class="co">&quot;&quot;&quot;List teams&quot;&quot;&quot;</span></span>
+<span id="cb26-8"><a href="#cb26-8"></a>        <span class="cf">return</span> <span class="bu">list</span>(Team.query.filter_by(<span class="op">**</span>args))</span>
 <span id="cb26-9"><a href="#cb26-9"></a></span>
 <span id="cb26-10"><a href="#cb26-10"></a>    <span class="at">@blp.arguments</span>(TeamSchema)</span>
-<span id="cb26-11"><a href="#cb26-11"></a>    <span class="at">@blp.response</span>(TeamSchema)</span>
-<span id="cb26-12"><a href="#cb26-12"></a>    <span class="kw">def</span> put(<span class="va">self</span>, new_item, item_id):</span>
-<span id="cb26-13"><a href="#cb26-13"></a>        <span class="co">&quot;&quot;&quot;Update an existing team&quot;&quot;&quot;</span></span>
-<span id="cb26-14"><a href="#cb26-14"></a>        item <span class="op">=</span> Team.query.get_or_404(item_id)</span>
-<span id="cb26-15"><a href="#cb26-15"></a>        TeamSchema().update(item, new_item)</span>
-<span id="cb26-16"><a href="#cb26-16"></a>        db.session.add(item)</span>
-<span id="cb26-17"><a href="#cb26-17"></a>        db.session.commit()</span>
-<span id="cb26-18"><a href="#cb26-18"></a>        <span class="cf">return</span> item</span>
-<span id="cb26-19"><a href="#cb26-19"></a></span>
-<span id="cb26-20"><a href="#cb26-20"></a>    <span class="at">@blp.response</span>(code<span class="op">=</span><span class="dv">204</span>)</span>
-<span id="cb26-21"><a href="#cb26-21"></a>    <span class="kw">def</span> delete(<span class="va">self</span>, item_id):</span>
-<span id="cb26-22"><a href="#cb26-22"></a>        <span class="co">&quot;&quot;&quot;Delete a team&quot;&quot;&quot;</span></span>
-<span id="cb26-23"><a href="#cb26-23"></a>        item <span class="op">=</span> Team.query.get_or_404(item_id)</span>
-<span id="cb26-24"><a href="#cb26-24"></a>        db.session.delete(item)</span>
-<span id="cb26-25"><a href="#cb26-25"></a>        db.session.commit()</span></code></pre></div>
+<span id="cb26-11"><a href="#cb26-11"></a>    <span class="at">@blp.response</span>(TeamSchema, code<span class="op">=</span><span class="dv">201</span>)</span>
+<span id="cb26-12"><a href="#cb26-12"></a>    <span class="kw">def</span> post(<span class="va">self</span>, new_team):</span>
+<span id="cb26-13"><a href="#cb26-13"></a>        <span class="co">&quot;&quot;&quot;Add a new team&quot;&quot;&quot;</span></span>
+<span id="cb26-14"><a href="#cb26-14"></a>        team <span class="op">=</span> Team(<span class="op">**</span>new_team)</span>
+<span id="cb26-15"><a href="#cb26-15"></a>        db.session.add(team)</span>
+<span id="cb26-16"><a href="#cb26-16"></a>        db.session.commit()</span>
+<span id="cb26-17"><a href="#cb26-17"></a>        <span class="cf">return</span> team</span></code></pre></div>
+</section><section id="structuration-dune-ressource-3" class="slide level2">
+<h2>Structuration d’une ressource (3)</h2>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a><span class="at">@blp.route</span>(<span class="st">&quot;/&lt;uuid:team_id&gt;&quot;</span>)</span>
+<span id="cb27-2"><a href="#cb27-2"></a><span class="kw">class</span> TeamsById(MethodView):</span>
+<span id="cb27-3"><a href="#cb27-3"></a></span>
+<span id="cb27-4"><a href="#cb27-4"></a>    <span class="at">@blp.response</span>(TeamSchema)</span>
+<span id="cb27-5"><a href="#cb27-5"></a>    <span class="kw">def</span> get(<span class="va">self</span>, team_id):</span>
+<span id="cb27-6"><a href="#cb27-6"></a>        <span class="co">&quot;&quot;&quot;Get team by ID&quot;&quot;&quot;</span></span>
+<span id="cb27-7"><a href="#cb27-7"></a>        <span class="cf">return</span> Team.query.get_or_404(team_id)</span>
+<span id="cb27-8"><a href="#cb27-8"></a></span>
+<span id="cb27-9"><a href="#cb27-9"></a>    <span class="at">@blp.arguments</span>(TeamSchema)</span>
+<span id="cb27-10"><a href="#cb27-10"></a>    <span class="at">@blp.response</span>(TeamSchema)</span>
+<span id="cb27-11"><a href="#cb27-11"></a>    <span class="kw">def</span> put(<span class="va">self</span>, new_team, team_id):</span>
+<span id="cb27-12"><a href="#cb27-12"></a>        <span class="co">&quot;&quot;&quot;Update an existing team&quot;&quot;&quot;</span></span>
+<span id="cb27-13"><a href="#cb27-13"></a>        team <span class="op">=</span> Team.query.get_or_404(team_id)</span>
+<span id="cb27-14"><a href="#cb27-14"></a>        TeamSchema().update(team, new_team)</span>
+<span id="cb27-15"><a href="#cb27-15"></a>        db.session.add(team)</span>
+<span id="cb27-16"><a href="#cb27-16"></a>        db.session.commit()</span>
+<span id="cb27-17"><a href="#cb27-17"></a>        <span class="cf">return</span> team</span>
+<span id="cb27-18"><a href="#cb27-18"></a></span>
+<span id="cb27-19"><a href="#cb27-19"></a>    <span class="at">@blp.response</span>(code<span class="op">=</span><span class="dv">204</span>)</span>
+<span id="cb27-20"><a href="#cb27-20"></a>    <span class="kw">def</span> delete(<span class="va">self</span>, team_id):</span>
+<span id="cb27-21"><a href="#cb27-21"></a>        <span class="co">&quot;&quot;&quot;Delete a team&quot;&quot;&quot;</span></span>
+<span id="cb27-22"><a href="#cb27-22"></a>        team <span class="op">=</span> Team.query.get_or_404(team_id)</span>
+<span id="cb27-23"><a href="#cb27-23"></a>        db.session.delete(team)</span>
+<span id="cb27-24"><a href="#cb27-24"></a>        db.session.commit()</span></code></pre></div>
 </section><section id="pagination" class="slide level2">
 <h2>Pagination</h2>
 <ul>
-<li>Pagination <code>a posteriori</code> des resources renvoyant une liste</li>
-<li>Validation des paramètres d’entrée <code>page</code> et <code>page_size</code> (query args)</li>
+<li>Pagination des resources renvoyant une liste</li>
+<li>Validation des paramètres d’entrée <code>page</code> et <code>page_size</code> (<em>query args</em>)</li>
 <li>Éléments de pagination renvoyés dans un Header</li>
+<li>Pagination de curseur de base de données</li>
 </ul>
-<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1"></a>headers[<span class="st">&quot;X-Pagination&quot;</span>]</span>
-<span id="cb27-2"><a href="#cb27-2"></a><span class="co"># {</span></span>
-<span id="cb27-3"><a href="#cb27-3"></a><span class="co">#     &#39;total&#39;: 1000, &#39;total_pages&#39;: 200,</span></span>
-<span id="cb27-4"><a href="#cb27-4"></a><span class="co">#     &#39;page&#39;: 2, &#39;first_page&#39;: 1, &#39;last_page&#39;: 200,</span></span>
-<span id="cb27-5"><a href="#cb27-5"></a><span class="co">#     &#39;previous_page&#39;: 1, &#39;next_page&#39;: 3,</span></span>
-<span id="cb27-6"><a href="#cb27-6"></a><span class="co"># }</span></span></code></pre></div>
-</section><section id="pagination-dun-curseur-de-base-de-donnée" class="slide level2">
-<h2>Pagination d’un curseur de base de donnée</h2>
-<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="im">from</span> flask_smorest <span class="im">import</span> Page</span>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1"></a><span class="im">from</span> .sqlcursor_pager <span class="im">import</span> SQLCursorPage</span>
 <span id="cb28-2"><a href="#cb28-2"></a></span>
-<span id="cb28-3"><a href="#cb28-3"></a><span class="kw">class</span> SQLCursorPage(Page):</span>
-<span id="cb28-4"><a href="#cb28-4"></a>    <span class="at">@property</span></span>
-<span id="cb28-5"><a href="#cb28-5"></a>    <span class="kw">def</span> item_count(<span class="va">self</span>):</span>
-<span id="cb28-6"><a href="#cb28-6"></a>        <span class="cf">return</span> <span class="va">self</span>.collection.count()</span>
-<span id="cb28-7"><a href="#cb28-7"></a></span>
-<span id="cb28-8"><a href="#cb28-8"></a></span>
-<span id="cb28-9"><a href="#cb28-9"></a><span class="at">@blp.route</span>(<span class="st">&quot;/&quot;</span>)</span>
-<span id="cb28-10"><a href="#cb28-10"></a><span class="kw">class</span> Teams(MethodView):</span>
-<span id="cb28-11"><a href="#cb28-11"></a></span>
-<span id="cb28-12"><a href="#cb28-12"></a>    <span class="at">@blp.arguments</span>(TeamQueryArgsSchema, location<span class="op">=</span><span class="st">&quot;query&quot;</span>)</span>
-<span id="cb28-13"><a href="#cb28-13"></a>    <span class="at">@blp.response</span>(TeamSchema(many<span class="op">=</span><span class="va">True</span>))</span>
-<span id="cb28-14"><a href="#cb28-14"></a>    <span class="at">@blp.paginate</span>(SQLCursorPage)</span>
-<span id="cb28-15"><a href="#cb28-15"></a>    <span class="kw">def</span> get(<span class="va">self</span>, args):</span>
-<span id="cb28-16"><a href="#cb28-16"></a>        <span class="co">&quot;&quot;&quot;List teams&quot;&quot;&quot;</span></span>
-<span id="cb28-17"><a href="#cb28-17"></a>        <span class="cf">return</span> Team.query.filter_by(<span class="op">**</span>args)</span></code></pre></div>
+<span id="cb28-3"><a href="#cb28-3"></a><span class="at">@blp.route</span>(<span class="st">&quot;/&quot;</span>)</span>
+<span id="cb28-4"><a href="#cb28-4"></a><span class="kw">class</span> Teams(MethodView):</span>
+<span id="cb28-5"><a href="#cb28-5"></a></span>
+<span id="cb28-6"><a href="#cb28-6"></a>    <span class="at">@blp.arguments</span>(TeamQueryArgsSchema, location<span class="op">=</span><span class="st">&quot;query&quot;</span>)</span>
+<span id="cb28-7"><a href="#cb28-7"></a>    <span class="at">@blp.response</span>(TeamSchema(many<span class="op">=</span><span class="va">True</span>))</span>
+<span id="cb28-8"><a href="#cb28-8"></a>    <span class="at">@blp.paginate</span>(SQLCursorPage)</span>
+<span id="cb28-9"><a href="#cb28-9"></a>    <span class="kw">def</span> get(<span class="va">self</span>, args):</span>
+<span id="cb28-10"><a href="#cb28-10"></a>        <span class="co">&quot;&quot;&quot;List teams&quot;&quot;&quot;</span></span>
+<span id="cb28-11"><a href="#cb28-11"></a>        <span class="cf">return</span> Team.query.filter_by(<span class="op">**</span>args)</span>
+<span id="cb28-12"><a href="#cb28-12"></a></span>
+<span id="cb28-13"><a href="#cb28-13"></a>headers[<span class="st">&quot;X-Pagination&quot;</span>]</span>
+<span id="cb28-14"><a href="#cb28-14"></a><span class="co"># {</span></span>
+<span id="cb28-15"><a href="#cb28-15"></a><span class="co">#     &#39;total&#39;: 1000, &#39;total_pages&#39;: 200,</span></span>
+<span id="cb28-16"><a href="#cb28-16"></a><span class="co">#     &#39;page&#39;: 2, &#39;first_page&#39;: 1, &#39;last_page&#39;: 200,</span></span>
+<span id="cb28-17"><a href="#cb28-17"></a><span class="co">#     &#39;previous_page&#39;: 1, &#39;next_page&#39;: 3,</span></span>
+<span id="cb28-18"><a href="#cb28-18"></a><span class="co"># }</span></span></code></pre></div>
 </section><section id="etag" class="slide level2">
 <h2>ETag</h2>
 <ul>
@@ -682,9 +711,9 @@ De la sérialization<br />
 </section><section id="démo" class="slide level2" data-background-image="assets/demo.gif">
 <h2>Démo</h2>
 </section></section>
-<section><section id="développer-avec-marshmallow" class="title-slide slide level1"><h1>Développer avec marshmallow</h1></section><section id="cycle-de-publication-1" class="slide level2">
-<h2>Cycle de publication (1)</h2>
-<p>Actuellement, deux branches de marshmallow maintenues.</p>
+<section><section id="développer-avec-marshmallow" class="title-slide slide level1"><h1>Développer avec marshmallow</h1></section><section id="cycle-de-publication" class="slide level2">
+<h2>Cycle de publication</h2>
+<p>Actuellement, deux branches de marshmallow maintenues</p>
 <table>
 <thead>
 <tr class="header">
@@ -706,41 +735,17 @@ De la sérialization<br />
 </tr>
 </tbody>
 </table>
-</section><section id="cycle-de-publication-2" class="slide level2">
-<h2>Cycle de publication (2)</h2>
-<p>marshmallow est utilisé dans beaucoup de bibliothèques et <em>frameworks</em>.</p>
-<p>Versions majeures peu fréquentes, nombreux changements.</p>
-<table>
-<thead>
-<tr class="header">
-<th>Version</th>
-<th>Date de publication</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1.0.0</td>
-<td>16 novembre 2014</td>
-</tr>
-<tr class="even">
-<td>2.0.0a1</td>
-<td>25 avril 2015</td>
-</tr>
-<tr class="odd">
-<td>2.0.0</td>
-<td>25 septembre 2015</td>
-</tr>
-<tr class="even">
-<td>3.0.0a1</td>
-<td>26 février 2017</td>
-</tr>
-<tr class="odd">
-<td>3.0.0</td>
-<td>18 août 2019</td>
-</tr>
-</tbody>
-</table>
-<p>webargs, apispec : versions majeures plus fréquentes, changements limités.</p>
+<ul>
+<li>marshmallow
+<ul>
+<li>Utilisé dans beaucoup de bibliothèques et <em>frameworks</em></li>
+<li>Versions majeures peu fréquentes, nombreux changements</li>
+</ul></li>
+<li>webargs, apispec,…
+<ul>
+<li>Versions majeures plus fréquentes, changements limités</li>
+</ul></li>
+</ul>
 </section><section id="bonnes-pratiques" class="slide level2">
 <h2>Bonnes pratiques</h2>
 <ul>
@@ -760,7 +765,6 @@ De la sérialization<br />
 <p>Planification de rénovation</p>
 <ul>
 <li>MongoDB / umongo</li>
-<li>marshmallow 2</li>
 <li>flask-smorest</li>
 </ul>
 <p><img data-src="assets/proleps-logo.png" /></p>
@@ -811,9 +815,10 @@ De la sérialization<br />
 <p><img data-src="assets/nature4cities-logo.png" /></p>
 <p><a href="https://www.nature4cities.eu/">https://www.nature4cities.eu/</a></p>
 </section></section>
-<section id="questions-1" class="title-slide slide level1"><h1>Questions</h1></section>
+<section id="questions" class="title-slide slide level1"><h1>Questions</h1></section>
 <section id="liens" class="title-slide slide level1"><h1>Liens</h1><p><a href="https://lafrech.github.io/marshmallow-pyconfr2019/">https://lafrech.github.io/marshmallow-pyconfr2019/</a></p>
-<p><a href="https://github.com/marshmallow-code">https://github.com/marshmallow-code</a></p></section>
+<p><a href="https://github.com/marshmallow-code">https://github.com/marshmallow-code</a></p>
+<p><a href="https://github.com/lafrech/flask-smorest-sqlalchemy-example">https://github.com/lafrech/flask-smorest-sqlalchemy-example</a></p></section>
     </div>
   </div>
 
