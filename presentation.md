@@ -342,7 +342,7 @@ class MemberSchema(ma.Schema):
 - ODM : _Object-Document Mapping_
 
 - Couche d'abstraction entre objets et base de donnée
-- Définit le modèle avec des schémas
+- Définit le modèle avec des schémas et des champs
 
 ## Intégration ORM/ODM - marshmallow
 
@@ -622,45 +622,15 @@ class TeamsById(MethodView):
         db.session.commit()
 ```
 
-## Pagination (1)
+## Pagination
 
-- Pagination `a posteriori` des resources renvoyant une liste
+- Pagination des resources renvoyant une liste
 - Validation des paramètres d'entrée ``page`` et ``page_size`` (_query args_)
 - Éléments de pagination renvoyés dans un Header
+- Pagination de curseur de base de données
 
 ```python
-from flask_smorest import Page
-
-@blp.route("/")
-class Teams(MethodView):
-
-    @blp.arguments(TeamQueryArgsSchema, location="query")
-    @blp.response(TeamSchema(many=True))
-    @blp.paginate(Page)
-    def get(self, args):
-        """List teams"""
-        return Team.get_list(filters=args)
-
-headers["X-Pagination"]
-# {
-#     'total': 1000, 'total_pages': 200,
-#     'page': 2, 'first_page': 1, 'last_page': 200,
-#     'previous_page': 1, 'next_page': 3,
-# }
-```
-
-## Pagination (2)
-
-Pagination d'un curseur de base de donnée
-
-```python
-from flask_smorest import Page
-
-class SQLCursorPage(Page):
-    @property
-    def item_count(self):
-        return self.collection.count()
-
+from .sqlcursor_pager import SQLCursorPage
 
 @blp.route("/")
 class Teams(MethodView):
@@ -671,6 +641,13 @@ class Teams(MethodView):
     def get(self, args):
         """List teams"""
         return Team.query.filter_by(**args)
+
+headers["X-Pagination"]
+# {
+#     'total': 1000, 'total_pages': 200,
+#     'page': 2, 'first_page': 1, 'last_page': 200,
+#     'previous_page': 1, 'next_page': 3,
+# }
 ```
 
 ## ETag
