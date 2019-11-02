@@ -140,7 +140,7 @@ Surcouche de `json`
     - Bibliothèque non standard
 
 
-# marshmallow {data-background-image="assets/marshmallow-stay-puft.webp"}
+# marshmallow {data-background-image="assets/marshmallow-stay-puft.gif"}
 
 ## Fonctionnalités
 
