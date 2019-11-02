@@ -31,12 +31,17 @@
     - Format d'échange (ex: service web)
     - Fichier de configuration
     - Sauvegarde de résultats de calcul
-    - Stockage temporaire sur disque
     - ...
 
 ## Pickle
 
-Objet → _Byte stream_ → Objet
+```{.ascii-art}
+ --------                -------------
+|        | === dump ==> |             |
+| Object |              | Byte stream |
+|        | <== load === |             |
+ --------                -------------
+```
 
 - Avantages
     - Bibliothèque standard
@@ -48,7 +53,13 @@ Objet → _Byte stream_ → Objet
 
 ## json (1)
 
-Objet → JSON → Objet
+```{.ascii-art}
+ --------                ------
+|        | === dump ==> |      |
+| Object |              | JSON |
+|        | <== load === |      |
+ --------                ------
+```
 
 ```python
 import json
@@ -65,7 +76,16 @@ json.loads('{"name": "Roger"}')
 ## json (2)
 
 Mais JSON ne définit que des types basiques :
-_number_, _string_, _boolean_, _array_, _object_, _null_.
+
+|JSON|Python|
+|-|-|
+|object|dict|
+|array|list|
+|string|str|
+|number (int/float)|int/float|
+|boolean|bool|
+|null|None|
+
 
 ```python
 import json
@@ -90,11 +110,23 @@ json.dumps(user)
 
 Transforme un objet Python en dictionnaire de types simples, _JSONisable_
 
-Objet → _dict_ → Objet
+```{.ascii-art}
+ --------                ------
+|        | === dump ==> |      |
+| Object |              | dict |
+|        | <== load === |      |
+ --------                ------
+```
 
-Surcouche de json
+Surcouche de `json`
 
-Objet → _dict_ → JSON → _dict_ → Objet
+```{.ascii-art}
+ --------                ------                 ------
+|        | === dump ==> |      |  === dump ==> |      |
+| Object |              | dict |               | JSON |
+|        | <== load === |      |  <== load === |      |
+ --------                ------                 ------
+```
 
 ## Bibliothèque de sérialisation (2)
 
@@ -116,21 +148,12 @@ Objet → _dict_ → JSON → _dict_ → Objet
 - Désérialisation depuis _dict_ ou JSON
 - Validation lors de la désérialisation
 
-
 ```{.ascii-art}
- --------                ------
-|        | === dump ==> |      |
-| Object |              | dict |
-|        | <== load === |      |
- --------                ------
-```
-
-```{.ascii-art}
- --------                 ------
-|        | === dumps ==> |      |
-| Object |               | JSON |
-|        | <== loads === |      |
- --------                 ------
+ --------                           -------------
+|        | ===      dump       ==> |             |
+| Object |                         | dict / JSON |
+|        | <== load & validate === |             |
+ --------                           -------------
 ```
 
 ## Schémas et champs
@@ -200,6 +223,27 @@ schema.dump(team)
 # {'name': 'Ghostbusters', 'creation_date': '1983-01-23T00:00:00'}
 ```
 
+## Validation
+
+Validation à la désérialisation
+
+- Champs obligatoires
+- Validation des valeurs
+- Structuration des messages d'erreur
+
+```python
+class MemberSchema(ma.Schema):
+    first_name = ma.fields.String(validate=ma.validate.Length(min=2, max=50))
+    last_name = ma.fields.String(required=True)
+    birthdate = ma.fields.DateTime()
+
+MemberSchema().load({"first_name": "V"})
+# marshmallow.exceptions.ValidationError: {
+#     'last_name': ['Missing data for required field.'],
+#     'first_name': ['Length must be between 2 and 50.']
+# }
+```
+
 ## Read-only, Write-only
 
 ```python
@@ -214,21 +258,6 @@ member = Member.get_one(last_name='Venkman')
 
 MemberSchema().dump(member)
 # {'first_name': 'Peter', 'last_name': 'Venkman', 'birthdate': '1960-09-06T00:00:00', 'age': 59}
-```
-
-## Sélection dynamique de champs
-
-```python
-class MemberSchema(ma.Schema):
-    first_name = ma.fields.String()
-    last_name = ma.fields.String()
-    birthdate = ma.fields.DateTime()
-
-MemberSchema(only=("last_name", )).dump(member)
-# {'last_name': 'Venkman'}
-
-MemberSchema(exclude=("last_name", )).dump(member)
-# {'first_name': 'Peter', 'birthdate': dt.datetime(1960, 9, 6)}
 ```
 
 ## Découplage des noms de champs entre modèle et API
@@ -247,8 +276,8 @@ MemberSchema().dump(member)
 
 ```python
 class MemberSchema(ma.Schema):
-    first_name = ma.fields.String(data_key="firstName")
-    last_name = ma.fields.String(data_key="lastName")
+    first_name = ma.fields.String()
+    last_name = ma.fields.String()
 
 members = Member.get_all()
 
@@ -261,7 +290,7 @@ schema.dump(members)
 # ]
 ```
 
-## Champs imbriqués
+## Schémas imbriqués
 
 ```python
 class MemberSchema(ma.Schema):
@@ -304,34 +333,6 @@ class MemberSchema(ma.Schema):
     # 'Peter'
 ```
 
-## Validation (1)
-
-Validation à la désérialisation
-
-- Champs obligatoires
-- Validation des valeurs
-
-```python
-class MemberSchema(ma.Schema):
-    first_name = ma.fields.String(validate=ma.validate.Length(min=2, max=50))
-    last_name = ma.fields.String(required=True)
-    birthdate = ma.fields.DateTime()
-```
-
-## Validation (2)
-
-Structuration des messages d'erreur
-
-```python
-MemberSchema().load({"first_name": "V"})
-# marshmallow.exceptions.ValidationError: {
-#     'last_name': ['Missing data for required field.'],
-#     'first_name': ['Length must be between 2 and 50.']
-# }
-```
-
-## Questions
-
 
 # Intégration ORM / ODM
 
@@ -365,7 +366,7 @@ MemberSchema().load({"first_name": "V"})
 - peewee → marshmallow-peewee
 - MongoEngine → marshmallow-mongoengine
 
-## marshmallow-mongoengine
+## marshmallow-mongoengine (1)
 
 ### Modèle
 
@@ -382,7 +383,7 @@ class Member(me.Document):
     birthdate = me.DateTimeField()
 ```
 
----------------------------------------------------
+## marshmallow-mongoengine (2)
 
 ### Schémas
 
@@ -413,9 +414,10 @@ TeamSchema().load({"name": "This name is too long to pass validation."})
 
 ## umongo : ODM MongoDB
 
-- Alternative à MongoEngine + marshmallow-mongoengine
-- Utilise marshmallow pour sérialization/désérialisation MongoDB BSON
-- Génère schemas marshmallow pour API
+- Alternative à { MongoEngine + marshmallow-mongoengine }
+    - Utilise marshmallow pour sérialization/désérialisation MongoDB BSON
+    - Génère schemas marshmallow pour API
+
 - Fonctionne avec PyMongo, TxMongo, Motor
 
 # webargs
@@ -424,9 +426,7 @@ TeamSchema().load({"name": "This name is too long to pass validation."})
 
 Désérialise et valide les requêtes HTTP
 
-Prend en charge nativement les principaux serveurs web :
-
-Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, aiohttp
+Injecte le contenu de la requête dans la fonction de vue
 
 ## Sans webargs
 
@@ -435,7 +435,7 @@ from flask import Flask, request
 
 app = Flask(__name__)
 
-team = TeamSchema()
+team_schema = TeamSchema()
 
 @app.route("/teams/", methods=['POST'])
 def post():
@@ -449,8 +449,6 @@ def post():
     team.save()
     return team_schema.dump(team), 201
 ```
-
----------------------------------------------------
 
 ## Avec webargs (1)
 
@@ -468,8 +466,6 @@ def post(team_data):
     return team_schema.dump(team), 201
 ```
 
----------------------------------------------------
-
 ## Avec webargs (2)
 
 Inclure les erreurs de validation dans la réponse
@@ -484,6 +480,13 @@ def handle_error(err):
     return jsonify({"errors": messages}), err.code
 ```
 
+## Compatibilité
+
+Prend en charge nativement les principaux serveurs web :
+
+Flask, Django, Bottle, Tornado, Pyramid, webapp2, Falcon, aiohttp
+
+
 # apispec
 
 ## apispec : Documentation OpenAPI (Swagger)
@@ -492,11 +495,9 @@ Génération de la documentation OpenAPI
 
 Introspection des schémas marshmallow
 
-Prise en charge de flask, bottle, tornado via apispec-webframeworks
-
 ![](assets/openapi-logo.png)
 
-## webargs + apispec : exemple
+## webargs + apispec : exemple (1)
 
 ```python
 from flask import Flask, request
@@ -516,7 +517,8 @@ spec = APISpec(
 app = Flask(__name__)
 spec.init_app(app)
 ```
----------------------------------------------------
+
+## webargs + apispec : exemple (2)
 
 ```python
 @app.route("/teams/", methods=["POST"])
@@ -552,24 +554,24 @@ spec.path(view=post_team)
 
 # flask-smorest {data-background-image="assets/smore.gif" .dark}
 
-## Fonctionnalités
+## Présentation
 
-- Sérialisation / désérialisation des entrées / sorties : webargs
-- Documentation OpenAPI automatique (ou presque) : apispec
-- Pagination
-- ETag
+- Environnement
+    - marshmallow, webargs, apispec
+    - Flask
+- Fonctionnalités
+    - Sérialisation / désérialisation des entrées / sorties : webargs
+    - Documentation OpenAPI automatique (ou presque) : apispec
+    - Pagination
+    - ETag
+- Anciennement flask-rest-api
 
-## Environnement
-
-- marshmallow
-- Flask
-
-## Structuration d'une ressource
+## Structuration d'une ressource (1)
 
 - ``flask.Blueprint`` → ressource
 - ``flask.MethodView`` → GET, POST, PUT, DELETE
 
----------------------------------------------------
+## Structuration d'une ressource (2)
 
 ```python
 @blp.route("/")
@@ -579,55 +581,66 @@ class Teams(MethodView):
     @blp.response(TeamSchema(many=True))
     def get(self, args):
         """List teams"""
-        return Team.query.filter_by(**args)
+        return list(Team.query.filter_by(**args))
 
     @blp.arguments(TeamSchema)
     @blp.response(TeamSchema, code=201)
-    def post(self, new_item):
+    def post(self, new_team):
         """Add a new team"""
-        item = Team(**new_item)
-        db.session.add(item)
+        team = Team(**new_team)
+        db.session.add(team)
         db.session.commit()
-        return item
+        return team
 ```
 
----------------------------------------------------
+## Structuration d'une ressource (3)
 
 ```python
-
-@blp.route("/<uuid:item_id>")
+@blp.route("/<uuid:team_id>")
 class TeamsById(MethodView):
 
     @blp.response(TeamSchema)
-    def get(self, item_id):
+    def get(self, team_id):
         """Get team by ID"""
-        return Team.query.get_or_404(item_id)
+        return Team.query.get_or_404(team_id)
 
     @blp.arguments(TeamSchema)
     @blp.response(TeamSchema)
-    def put(self, new_item, item_id):
+    def put(self, new_team, team_id):
         """Update an existing team"""
-        item = Team.query.get_or_404(item_id)
-        TeamSchema().update(item, new_item)
-        db.session.add(item)
+        team = Team.query.get_or_404(team_id)
+        TeamSchema().update(team, new_team)
+        db.session.add(team)
         db.session.commit()
-        return item
+        return team
 
     @blp.response(code=204)
-    def delete(self, item_id):
+    def delete(self, team_id):
         """Delete a team"""
-        item = Team.query.get_or_404(item_id)
-        db.session.delete(item)
+        team = Team.query.get_or_404(team_id)
+        db.session.delete(team)
         db.session.commit()
 ```
 
-## Pagination
+## Pagination (1)
 
 - Pagination `a posteriori` des resources renvoyant une liste
-- Validation des paramètres d'entrée ``page`` et ``page_size`` (query args)
+- Validation des paramètres d'entrée ``page`` et ``page_size`` (_query args_)
 - Éléments de pagination renvoyés dans un Header
 
 ```python
+from flask_smorest import Page
+
+@blp.route("/")
+class Teams(MethodView):
+
+    @blp.arguments(TeamQueryArgsSchema, location="query")
+    @blp.response(TeamSchema(many=True))
+    @blp.paginate(Page)
+    def get(self, args):
+        """List teams"""
+        return Team.get_list(filters=args)
+
 headers["X-Pagination"]
 # {
 #     'total': 1000, 'total_pages': 200,
@@ -636,7 +649,9 @@ headers["X-Pagination"]
 # }
 ```
 
-## Pagination d'un curseur de base de donnée
+## Pagination (2)
+
+Pagination d'un curseur de base de donnée
 
 ```python
 from flask_smorest import Page
@@ -678,30 +693,20 @@ class Teams(MethodView):
 
 # Développer avec marshmallow
 
-## Cycle de publication (1)
+## Cycle de publication
 
-Actuellement, deux branches de marshmallow maintenues.
+Actuellement, deux branches de marshmallow maintenues
 
 |Branche|Python|Date de publication|
 |-|-|-|
 |2.x|2.7+, 3.4+|25 septembre 2015|
 |3.x|3.5+|18 août 2019|
 
-## Cycle de publication (2)
-
-marshmallow est utilisé dans beaucoup de bibliothèques et _frameworks_.
-
-Versions majeures peu fréquentes, nombreux changements.
-
-|Version|Date de publication|
-|-|-|
-|1.0.0|16 novembre 2014|
-|2.0.0a1|25 avril 2015|
-|2.0.0|25 septembre 2015|
-|3.0.0a1|26 février 2017|
-|3.0.0|18 août 2019|
-
-webargs, apispec : versions majeures plus fréquentes, changements limités.
+- marshmallow
+    - Utilisé dans beaucoup de bibliothèques et _frameworks_
+    - Versions majeures peu fréquentes, nombreux changements
+- webargs, apispec,...
+    - Versions majeures plus fréquentes, changements limités
 
 ## Bonnes pratiques
 
@@ -727,7 +732,6 @@ Gestion énergétique de patrimoine immobilier
 Planification de rénovation
 
 - MongoDB / umongo
-- marshmallow 2
 - flask-smorest
 
 ![](assets/proleps-logo.png)
@@ -795,3 +799,5 @@ Calculs synchrones sur serveur distant via API web
 [https://lafrech.github.io/marshmallow-pyconfr2019/](https://lafrech.github.io/marshmallow-pyconfr2019/)
 
 [https://github.com/marshmallow-code](https://github.com/marshmallow-code)
+
+[https://github.com/lafrech/flask-smorest-sqlalchemy-example](https://github.com/lafrech/flask-smorest-sqlalchemy-example)

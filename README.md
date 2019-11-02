@@ -6,8 +6,9 @@ Support de présentation marshmallow
 gh-pages : https://lafrech.github.io/marshmallow-pyconfr2019/
 
 Exemple :
-https://github.com/lafrech/flask-smorest-sqlalchemy-example
-https://team-manager-demo.jolimont.fr/redoc
-https://team-manager-demo.jolimont.fr/swagger-ui
+- https://github.com/lafrech/flask-smorest-sqlalchemy-example
+- https://team-manager-demo.jolimont.fr
+- https://team-manager-demo.jolimont.fr/redoc
+- https://team-manager-demo.jolimont.fr/swagger-ui
 
 Démo : https://mybinder.org/v2/gh/lafrech/flask-smorest-sqlalchemy-example/pycon2019?filepath=demo%2Fdemo.py
