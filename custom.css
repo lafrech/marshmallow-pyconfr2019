@@ -20,3 +20,10 @@ pre.ascii-art code {
 section.dark h1 {
     color: black;
 }
+
+code span.im {color: #dc322f} /* Import */
+code span.va { color: #268bd2; } /* Variable */
+code span.kw { color: #859900; font-weight: initial; } /* Keyword */
+code span.cf { color: #859900; font-weight: initial; } /* ControlFlow */
+code span.co { color: #2aa198; font-style: initial; } /* Comment */
+code span.st { color: #2aa198; } /* String */
